@@ -9,5 +9,5 @@ public interface UserDetailsRepository extends JpaRepository<UserDetails, Long> 
 
     // method to fetch the user by the username and password
 
-    // method to fetch the user by the email and password 
+    // method to fetch the user by the email and password
 }
