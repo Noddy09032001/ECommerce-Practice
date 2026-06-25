@@ -1,6 +1,7 @@
 package com.code.ecommerce.controller;
 
 import com.code.ecommerce.common.constants.ApiMessageConstants;
+import com.code.ecommerce.common.constants.RequestTracker;
 import com.code.ecommerce.dto.requests.UserDetailsRequest;
 import com.code.ecommerce.dto.response.ApiResponse;
 import com.code.ecommerce.dto.response.UserDetailsResponse;
@@ -8,20 +9,24 @@ import com.code.ecommerce.exceptions.InvalidCredentialsException;
 import com.code.ecommerce.exceptions.UserExistsException;
 import com.code.ecommerce.service.UserDetailsService;
 import jakarta.validation.Valid;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.HandlerMapping;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserDetailsController {
 
+    private final HandlerMapping resourceHandlerMapping;
     private UserDetailsService userDetailsService;
 
     @Autowired
-    public UserDetailsController(UserDetailsService userDetailsService){
+    public UserDetailsController(UserDetailsService userDetailsService, @Nullable HandlerMapping resourceHandlerMapping){
         this.userDetailsService = userDetailsService;
+        this.resourceHandlerMapping = resourceHandlerMapping;
     }
 
     /**
@@ -49,7 +54,15 @@ public class UserDetailsController {
      * @throws Exception if an unexpected error occurs during registration
      */
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserDetailsRequest request) throws Exception, UserExistsException {
-        return null;
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserDetailsRequest request,
+                                          @RequestHeader("id") String id) throws Exception, UserExistsException {
+        RequestTracker.addRequestKey(id);  // check if the same request is being sent again
+        UserDetailsResponse response = userDetailsService.signUp(request);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setData(response);
+        apiResponse.setStatusCode(HttpStatus.CREATED);
+        apiResponse.setMessage(ApiMessageConstants.USER_CREATED.getMessage());
+
+        return ResponseEntity.ok(apiResponse);
     }
 }
