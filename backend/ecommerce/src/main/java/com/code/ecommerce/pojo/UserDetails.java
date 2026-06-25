@@ -56,6 +56,20 @@ public class UserDetails {
         this.role = role;
     }
 
+    public UserDetails(String name, String password, String email, String phoneNumber, String city, String state, String country, String pinCode, String address, GenderConstants gender, RoleConstants role) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.city = city;
+        this.state = state;
+        this.country = country;
+        this.pinCode = pinCode;
+        this.address = address;
+        this.gender = gender;
+        this.role = role;
+    }
+
     public Long getId() {
         return id;
     }
