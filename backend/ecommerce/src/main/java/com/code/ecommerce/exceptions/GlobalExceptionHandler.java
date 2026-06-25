@@ -36,4 +36,18 @@ public class GlobalExceptionHandler {
         response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    /**
+     *
+     * @param sameRequestException
+     * @return
+     */
+    @ExceptionHandler(SameRequestException.class)
+    public ResponseEntity<ApiResponse> handleSameRequestException(SameRequestException sameRequestException){
+        ApiResponse response = new ApiResponse();
+        response.setData(null);
+        response.setMessage(sameRequestException.getMessage());
+        response.setStatusCode(HttpStatus.ALREADY_REPORTED);
+        return new ResponseEntity<>(response, HttpStatus.ALREADY_REPORTED);   // returning the response body
+    }
 }
