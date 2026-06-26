@@ -2,7 +2,11 @@ package com.code.ecommerce.pojo;
 
 import com.code.ecommerce.common.constants.GenderConstants;
 import com.code.ecommerce.common.constants.RoleConstants;
+import com.code.ecommerce.pojo.orders.OrderDetails;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user_details")
@@ -38,6 +42,9 @@ public class UserDetails {
     @Enumerated(EnumType.STRING)
     private RoleConstants role;  // role of the user
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<OrderDetails> orders = new ArrayList<>();
+
     public UserDetails(){}
 
     public UserDetails(Long id, String name, String password, String email, String phoneNumber, String city, String state,
@@ -56,7 +63,8 @@ public class UserDetails {
         this.role = role;
     }
 
-    public UserDetails(String name, String password, String email, String phoneNumber, String city, String state, String country, String pinCode, String address, GenderConstants gender, RoleConstants role) {
+    public UserDetails(String name, String password, String email, String phoneNumber, String city, String state,
+                       String country, String pinCode, String address, GenderConstants gender, RoleConstants role) {
         this.name = name;
         this.password = password;
         this.email = email;
@@ -68,6 +76,24 @@ public class UserDetails {
         this.address = address;
         this.gender = gender;
         this.role = role;
+    }
+
+    public UserDetails(Long id, String name, String password, String phoneNumber, String email, String city,
+                       String country, String state, String pinCode, String address, GenderConstants gender,
+                       RoleConstants role, List<OrderDetails> orders) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.city = city;
+        this.country = country;
+        this.state = state;
+        this.pinCode = pinCode;
+        this.address = address;
+        this.gender = gender;
+        this.role = role;
+        this.orders = orders;
     }
 
     public Long getId() {
@@ -164,5 +190,13 @@ public class UserDetails {
 
     public void setRole(RoleConstants role) {
         this.role = role;
+    }
+
+    public List<OrderDetails> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<OrderDetails> orders) {
+        this.orders = orders;
     }
 }
