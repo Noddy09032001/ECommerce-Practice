@@ -9,24 +9,20 @@ import com.code.ecommerce.exceptions.InvalidCredentialsException;
 import com.code.ecommerce.exceptions.UserExistsException;
 import com.code.ecommerce.service.UserDetailsService;
 import jakarta.validation.Valid;
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.HandlerMapping;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserDetailsController {
 
-    private final HandlerMapping resourceHandlerMapping;
     private UserDetailsService userDetailsService;
 
     @Autowired
-    public UserDetailsController(UserDetailsService userDetailsService, @Nullable HandlerMapping resourceHandlerMapping){
+    public UserDetailsController(UserDetailsService userDetailsService){
         this.userDetailsService = userDetailsService;
-        this.resourceHandlerMapping = resourceHandlerMapping;
     }
 
     /**
