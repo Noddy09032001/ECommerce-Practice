@@ -4,6 +4,8 @@ import com.code.ecommerce.pojo.UserDetails;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -17,7 +19,13 @@ public class Order {
     private String orderId;  // the order id being generated
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private OrderDetails orderDetails;  // one to one association with the order details
+    private OrderDetails orderDetails;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<OrderItemDetails> orderItems = new ArrayList<>();  // getting the order items associated
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<OrderStatusHistory> orderStatuses = new ArrayList<>();
 
     @Column(name = "created_on")
     private LocalDateTime createdOn;  // time of the order creation
@@ -42,13 +50,16 @@ public class Order {
 
     public Order(){}
 
-    public Order(Long id, String orderId, OrderDetails orderDetails, LocalDateTime modifiedOn, LocalDateTime createdOn,
+    public Order(Long id, String orderId, List<OrderItemDetails> orderItems, OrderDetails orderDetails,
+                 List<OrderStatusHistory> orderStatuses, LocalDateTime createdOn, LocalDateTime modifiedOn,
                  String createdBy, String modifiedBy, String currentStatus, Integer totalItems, double grandTotal) {
         this.id = id;
         this.orderId = orderId;
+        this.orderItems = orderItems;
         this.orderDetails = orderDetails;
-        this.modifiedOn = modifiedOn;
+        this.orderStatuses = orderStatuses;
         this.createdOn = createdOn;
+        this.modifiedOn = modifiedOn;
         this.createdBy = createdBy;
         this.modifiedBy = modifiedBy;
         this.currentStatus = currentStatus;
@@ -134,5 +145,21 @@ public class Order {
 
     public void setGrandTotal(double grandTotal) {
         this.grandTotal = grandTotal;
+    }
+
+    public List<OrderItemDetails> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItemDetails> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public List<OrderStatusHistory> getOrderStatuses() {
+        return orderStatuses;
+    }
+
+    public void setOrderStatuses(List<OrderStatusHistory> orderStatuses) {
+        this.orderStatuses = orderStatuses;
     }
 }
