@@ -8,20 +8,18 @@ import java.util.List;
 public class OrderRequest {
 
     private LocalDateTime orderDate;  // date of the current order
-    private List<OrderItem> items;  // items in the request body
+    private List<OrderItemRequest> items;  // items in the request body
     private PaymentMethods paymentMode;  // mode of the payment
-    private OrderPayment paymentDetails;  // details of the payment being captured
     private AddressDetails address;  // address of the user
     private OrderUserRequest user;  // details of the current user
 
     public OrderRequest(){}
 
-    public OrderRequest(LocalDateTime orderDate, List<OrderItem> items, PaymentMethods paymentMode,
-                        OrderPayment paymentDetails, AddressDetails address, OrderUserRequest user) {
+    public OrderRequest(LocalDateTime orderDate, List<OrderItemRequest> items, PaymentMethods paymentMode,
+                        AddressDetails address, OrderUserRequest user) {
         this.orderDate = orderDate;
         this.items = items;
         this.paymentMode = paymentMode;
-        this.paymentDetails = paymentDetails;
         this.address = address;
         this.user = user;
     }
@@ -42,22 +40,14 @@ public class OrderRequest {
         this.paymentMode = paymentMode;
     }
 
-    public List<OrderItem> getItems() {
+    public List<OrderItemRequest> getItems() {
         return items;
     }
 
-    public void setItems(List<OrderItem> items) {
+    public void setItems(List<OrderItemRequest> items) {
         this.items = items;
     }
-
-    public OrderPayment getPaymentDetails() {
-        return paymentDetails;
-    }
-
-    public void setPaymentDetails(OrderPayment paymentDetails) {
-        this.paymentDetails = paymentDetails;
-    }
-
+    
     public AddressDetails getAddress() {
         return address;
     }
