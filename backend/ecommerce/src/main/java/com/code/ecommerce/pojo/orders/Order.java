@@ -46,13 +46,13 @@ public class Order {
     private Integer totalItems;   // the total items in the order
 
     @Column(name = "grand_total")
-    private double grandTotal;  // the grand total amount for the order
+    private Double grandTotal;  // the grand total amount for the order
 
     public Order(){}
 
     public Order(Long id, String orderId, List<OrderItemDetails> orderItems, OrderDetails orderDetails,
                  List<OrderStatusHistory> orderStatuses, LocalDateTime createdOn, LocalDateTime modifiedOn,
-                 String createdBy, String modifiedBy, String currentStatus, Integer totalItems, double grandTotal) {
+                 String createdBy, String modifiedBy, String currentStatus, Integer totalItems, Double grandTotal) {
         this.id = id;
         this.orderId = orderId;
         this.orderItems = orderItems;
@@ -139,11 +139,11 @@ public class Order {
         this.totalItems = totalItems;
     }
 
-    public double getGrandTotal() {
+    public Double getGrandTotal() {
         return grandTotal;
     }
 
-    public void setGrandTotal(double grandTotal) {
+    public void setGrandTotal(Double grandTotal) {
         this.grandTotal = grandTotal;
     }
 

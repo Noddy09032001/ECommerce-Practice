@@ -24,7 +24,7 @@ public class OrderItemDetails {
     private double amount;  // the amount of one item
 
     @Column(nullable = false)
-    private Integer quantity;  // the quantity purchased
+    private Double quantity;  // the quantity purchased
 
     @Column(name = "total_amount")
     private double totalAmount;  // the total cost of one item
@@ -37,7 +37,7 @@ public class OrderItemDetails {
 
     public OrderItemDetails(){}
 
-    public OrderItemDetails(Long id, Order order, ItemDetails item, double amount, Integer quantity, double totalAmount,
+    public OrderItemDetails(Long id, Order order, ItemDetails item, double amount, Double quantity, double totalAmount,
                             LocalDateTime createdOn, LocalDateTime modifiedOn) {
         this.id = id;
         this.order = order;
@@ -81,11 +81,11 @@ public class OrderItemDetails {
         this.amount = amount;
     }
 
-    public Integer getQuantity() {
+    public Double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
 
