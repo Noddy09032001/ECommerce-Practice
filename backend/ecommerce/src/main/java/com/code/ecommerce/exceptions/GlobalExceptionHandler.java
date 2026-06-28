@@ -38,9 +38,9 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     *
-     * @param sameRequestException
-     * @return
+     * Handles duplication of requests being sent due to multiple clicks
+     * @param sameRequestException the custom exception containing the same request handling message
+     * @return ResponseEntity containing a standardized ApiResponse with an appropriate HTTP error status
      */
     @ExceptionHandler(SameRequestException.class)
     public ResponseEntity<ApiResponse> handleSameRequestException(SameRequestException sameRequestException){
@@ -49,5 +49,19 @@ public class GlobalExceptionHandler {
         response.setMessage(sameRequestException.getMessage());
         response.setStatusCode(HttpStatus.ALREADY_REPORTED);
         return new ResponseEntity<>(response, HttpStatus.ALREADY_REPORTED);   // returning the response body
+    }
+
+    /**
+     * handles the condition of invalid item fetching due to incorrect id's
+     * @param invalidItemException the custom exception containing invalid item error message
+     * @return ResponseEntity containing a standardized ApiResponse with an appropriate HTTP error status
+     */
+    @ExceptionHandler(InvalidItemException.class)
+    public ResponseEntity<ApiResponse> handleInvalidItemException(InvalidItemException invalidItemException){
+        ApiResponse response = new ApiResponse();
+        response.setData(null);
+        response.setMessage(invalidItemException.getMessage());
+        response.setStatusCode(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);   // returning the response body
     }
 }
