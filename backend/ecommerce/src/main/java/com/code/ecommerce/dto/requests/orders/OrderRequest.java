@@ -47,7 +47,7 @@ public class OrderRequest {
     public void setItems(List<OrderItemRequest> items) {
         this.items = items;
     }
-    
+
     public AddressDetails getAddress() {
         return address;
     }
