@@ -2,7 +2,7 @@ package com.code.ecommerce.controller;
 
 import com.code.ecommerce.common.constants.RequestTracker;
 import com.code.ecommerce.dto.requests.orders.OrderRequest;
-import com.code.ecommerce.service.OrderService;
+import com.code.ecommerce.service.orders.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
