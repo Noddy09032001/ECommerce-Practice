@@ -1,6 +1,6 @@
 package com.code.ecommerce.pojo.orders;
 
-import com.code.ecommerce.pojo.ItemDetails;
+import com.code.ecommerce.pojo.Item;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -19,7 +19,7 @@ public class OrderItemDetails {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
-    private ItemDetails item;
+    private Item item;
 
     private double amount;  // the amount of one item
 
@@ -37,7 +37,7 @@ public class OrderItemDetails {
 
     public OrderItemDetails(){}
 
-    public OrderItemDetails(Long id, Order order, ItemDetails item, double amount, Double quantity, double totalAmount,
+    public OrderItemDetails(Long id, Order order, Item item, double amount, Double quantity, double totalAmount,
                             LocalDateTime createdOn, LocalDateTime modifiedOn) {
         this.id = id;
         this.order = order;
@@ -65,11 +65,11 @@ public class OrderItemDetails {
         this.order = order;
     }
 
-    public ItemDetails getItem() {
+    public Item getItem() {
         return item;
     }
 
-    public void setItem(ItemDetails item) {
+    public void setItem(Item item) {
         this.item = item;
     }
 

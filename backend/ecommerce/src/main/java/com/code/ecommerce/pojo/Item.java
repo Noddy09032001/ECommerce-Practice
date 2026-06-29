@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "item_details")
-public class ItemDetails {
+public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,12 +55,12 @@ public class ItemDetails {
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItemDetails> orderItems = new ArrayList<>();
 
-    public ItemDetails(){}
+    public Item(){}
 
-    public ItemDetails(Long id, String itemName, String itemId, String itemDescription, LocalDateTime createdOn,
-                       LocalDateTime modifiedOn, String createdBy, String modifiedBy, double amount, float cgst,
-                       float sgst, float igst, float vat, float cess, double totalCost, Integer availableQuantity,
-                       String sku, Boolean active, List<OrderItemDetails> orderItems) {
+    public Item(Long id, String itemName, String itemId, String itemDescription, LocalDateTime createdOn,
+                LocalDateTime modifiedOn, String createdBy, String modifiedBy, double amount, float cgst,
+                float sgst, float igst, float vat, float cess, double totalCost, Integer availableQuantity,
+                String sku, Boolean active, List<OrderItemDetails> orderItems) {
         this.id = id;
         this.itemName = itemName;
         this.itemId = itemId;
