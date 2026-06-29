@@ -22,17 +22,18 @@ public class SellerItemMapping {
 
     @Column(name = "amount", precision = 15, scale = 2)
     private Double amount;   // the unit cost of the item before tax
-    private Float cgst;
-    private Float sgst;
-    private Float igst;
-    private Float vat;
-    private Float cess;
+
+    @Column(name = "other_charges")
+    private Float otherCharges;  // if any other charges
+
+    @Column(name = "transportation_charges")
+    private Float transportationCharges;  // transportation charges specified by the merchant
 
     @Column(name = "total_cost", precision = 15, scale = 2)
     private Double totalCost;  // the total amount after all the taxes added up
 
     @Column(name = "available_quantity")
-    private Double availableQuantity;  // available quantity for the inventory
+    private Integer availableQuantity;  // available quantity for the inventory
 
     @Column(name = "is_active")
     private Boolean active = true;
@@ -45,19 +46,15 @@ public class SellerItemMapping {
 
     public SellerItemMapping(){}
 
-    public SellerItemMapping(Long id, Seller seller, Item item, Double amount, Float cgst,
-                             Float sgst, Float igst, Float vat, Float cess,
-                             Double totalCost, Double availableQuantity, Boolean active,
-                             LocalDateTime createdOn, LocalDateTime modifiedOn) {
+    public SellerItemMapping(Long id, Seller seller, Item item, Double amount, Float otherCharges,
+                             Float transportationCharges, Double totalCost, Integer availableQuantity,
+                             Boolean active, LocalDateTime createdOn, LocalDateTime modifiedOn) {
         this.id = id;
         this.seller = seller;
         this.item = item;
         this.amount = amount;
-        this.cgst = cgst;
-        this.sgst = sgst;
-        this.igst = igst;
-        this.vat = vat;
-        this.cess = cess;
+        this.otherCharges = otherCharges;
+        this.transportationCharges = transportationCharges;
         this.totalCost = totalCost;
         this.availableQuantity = availableQuantity;
         this.active = active;
@@ -97,46 +94,6 @@ public class SellerItemMapping {
         this.item = item;
     }
 
-    public Float getCgst() {
-        return cgst;
-    }
-
-    public void setCgst(Float cgst) {
-        this.cgst = cgst;
-    }
-
-    public Float getSgst() {
-        return sgst;
-    }
-
-    public void setSgst(Float sgst) {
-        this.sgst = sgst;
-    }
-
-    public Float getVat() {
-        return vat;
-    }
-
-    public void setVat(Float vat) {
-        this.vat = vat;
-    }
-
-    public Float getIgst() {
-        return igst;
-    }
-
-    public void setIgst(Float igst) {
-        this.igst = igst;
-    }
-
-    public Float getCess() {
-        return cess;
-    }
-
-    public void setCess(Float cess) {
-        this.cess = cess;
-    }
-
     public Double getTotalCost() {
         return totalCost;
     }
@@ -145,11 +102,11 @@ public class SellerItemMapping {
         this.totalCost = totalCost;
     }
 
-    public Double getAvailableQuantity() {
+    public Integer getAvailableQuantity() {
         return availableQuantity;
     }
 
-    public void setAvailableQuantity(Double availableQuantity) {
+    public void setAvailableQuantity(Integer availableQuantity) {
         this.availableQuantity = availableQuantity;
     }
 
@@ -175,5 +132,21 @@ public class SellerItemMapping {
 
     public void setModifiedOn(LocalDateTime modifiedOn) {
         this.modifiedOn = modifiedOn;
+    }
+
+    public Float getOtherCharges() {
+        return otherCharges;
+    }
+
+    public void setOtherCharges(Float otherCharges) {
+        this.otherCharges = otherCharges;
+    }
+
+    public Float getTransportationCharges() {
+        return transportationCharges;
+    }
+
+    public void setTransportationCharges(Float transportationCharges) {
+        this.transportationCharges = transportationCharges;
     }
 }

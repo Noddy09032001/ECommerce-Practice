@@ -24,6 +24,8 @@ public class Item {
     @Column(name = "item_description")
     private String itemDescription;
 
+    private String category;   // item category
+
     @Column(name = "created_on")
     private LocalDateTime createdOn;  // storing the creation date for the item
 
@@ -57,7 +59,7 @@ public class Item {
 
     public Item(){}
 
-    public Item(Long id, String itemName, String itemId, String itemDescription, LocalDateTime createdOn,
+    public Item(Long id, String itemName, String itemId, String itemDescription, String category, LocalDateTime createdOn,
                 LocalDateTime modifiedOn, String createdBy, String modifiedBy, Float sgst, Float cgst, Float igst,
                 Float vat, Float cess, String sku, Boolean active, List<OrderItemDetails> orderItems,
                 List<SellerItemMapping> sellers) {
@@ -65,6 +67,7 @@ public class Item {
         this.itemName = itemName;
         this.itemId = itemId;
         this.itemDescription = itemDescription;
+        this.category = category;
         this.createdOn = createdOn;
         this.modifiedOn = modifiedOn;
         this.createdBy = createdBy;
@@ -214,5 +217,13 @@ public class Item {
 
     public void setCess(Float cess) {
         this.cess = cess;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }
