@@ -30,21 +30,17 @@ public class Item {
     @Column(name = "modified_on")
     private LocalDateTime modifiedOn;   // storing the modified date for the item
 
+    @Column(name = "created_by")
     private String createdBy;  // data for the item creator
+
+    @Column(name = "modified_on")
     private String modifiedBy;  // storing the data for item modifier
 
-    private double amount;   // the unit cost of the item before tax
-    private float cgst;
-    private float sgst;
-    private float igst;
-    private float vat;
-    private float cess;
-
-    @Column(name = "total_cost")
-    private double totalCost;  // the total amount after all the taxes added up
-
-    @Column(name = "available_quantity")
-    private Integer availableQuantity;  // available quantity for the inventory
+    private Float cgst;
+    private Float sgst;
+    private Float igst;
+    private Float vat;
+    private Float cess;
 
     @Column(name = "sku", unique = true)
     private String sku;  // the sku for inventory
@@ -55,12 +51,16 @@ public class Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItemDetails> orderItems = new ArrayList<>();
 
+    // merchants or sellers associated with selling the item
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SellerItemMapping> sellers = new ArrayList<>();
+
     public Item(){}
 
     public Item(Long id, String itemName, String itemId, String itemDescription, LocalDateTime createdOn,
-                LocalDateTime modifiedOn, String createdBy, String modifiedBy, double amount, float cgst,
-                float sgst, float igst, float vat, float cess, double totalCost, Integer availableQuantity,
-                String sku, Boolean active, List<OrderItemDetails> orderItems) {
+                LocalDateTime modifiedOn, String createdBy, String modifiedBy, Float sgst, Float cgst, Float igst,
+                Float vat, Float cess, String sku, Boolean active, List<OrderItemDetails> orderItems,
+                List<SellerItemMapping> sellers) {
         this.id = id;
         this.itemName = itemName;
         this.itemId = itemId;
@@ -69,17 +69,15 @@ public class Item {
         this.modifiedOn = modifiedOn;
         this.createdBy = createdBy;
         this.modifiedBy = modifiedBy;
-        this.amount = amount;
-        this.cgst = cgst;
         this.sgst = sgst;
+        this.cgst = cgst;
         this.igst = igst;
         this.vat = vat;
         this.cess = cess;
-        this.totalCost = totalCost;
-        this.availableQuantity = availableQuantity;
         this.sku = sku;
         this.active = active;
         this.orderItems = orderItems;
+        this.sellers = sellers;
     }
 
     public String getItemName() {
@@ -138,76 +136,12 @@ public class Item {
         this.modifiedBy = modifiedBy;
     }
 
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public float getCgst() {
-        return cgst;
-    }
-
-    public void setCgst(float cgst) {
-        this.cgst = cgst;
-    }
-
-    public float getSgst() {
-        return sgst;
-    }
-
-    public void setSgst(float sgst) {
-        this.sgst = sgst;
-    }
-
-    public float getIgst() {
-        return igst;
-    }
-
-    public void setIgst(float igst) {
-        this.igst = igst;
-    }
-
-    public float getVat() {
-        return vat;
-    }
-
-    public void setVat(float vat) {
-        this.vat = vat;
-    }
-
-    public float getCess() {
-        return cess;
-    }
-
-    public void setCess(float cess) {
-        this.cess = cess;
-    }
-
-    public double getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(double totalCost) {
-        this.totalCost = totalCost;
-    }
-
     public String getItemId() {
         return itemId;
     }
 
     public void setItemId(String itemId) {
         this.itemId = itemId;
-    }
-
-    public Integer getAvailableQuantity() {
-        return availableQuantity;
-    }
-
-    public void setAvailableQuantity(Integer availableQuantity) {
-        this.availableQuantity = availableQuantity;
     }
 
     public String getSku() {
@@ -232,5 +166,53 @@ public class Item {
 
     public void setOrderItems(List<OrderItemDetails> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public List<SellerItemMapping> getSellers() {
+        return sellers;
+    }
+
+    public void setSellers(List<SellerItemMapping> sellers) {
+        this.sellers = sellers;
+    }
+
+    public Float getCgst() {
+        return cgst;
+    }
+
+    public void setCgst(Float cgst) {
+        this.cgst = cgst;
+    }
+
+    public Float getSgst() {
+        return sgst;
+    }
+
+    public void setSgst(Float sgst) {
+        this.sgst = sgst;
+    }
+
+    public Float getVat() {
+        return vat;
+    }
+
+    public void setVat(Float vat) {
+        this.vat = vat;
+    }
+
+    public Float getIgst() {
+        return igst;
+    }
+
+    public void setIgst(Float igst) {
+        this.igst = igst;
+    }
+
+    public Float getCess() {
+        return cess;
+    }
+
+    public void setCess(Float cess) {
+        this.cess = cess;
     }
 }

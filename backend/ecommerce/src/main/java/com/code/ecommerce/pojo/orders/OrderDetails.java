@@ -1,6 +1,7 @@
 package com.code.ecommerce.pojo.orders;
 
 import com.code.ecommerce.common.constants.PaymentMethods;
+import com.code.ecommerce.pojo.Seller;
 import com.code.ecommerce.pojo.UserDetails;
 import jakarta.persistence.*;
 
@@ -24,6 +25,10 @@ public class OrderDetails {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserDetails user;   // the order is for which user
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id", nullable = false)
+    private Seller seller;  // seller selling the item
 
     private double amount;   // the amount before the taxes
     private float cgst;
@@ -57,7 +62,7 @@ public class OrderDetails {
     public OrderDetails(Long id, String orderDetailsId, Order order, UserDetails user, double amount, float cgst,
                         float sgst, float vat, float igst, double totalTaxInAmount, float cess, double totalOrderAmount,
                         PaymentMethods paymentMode, LocalDateTime createdOn, LocalDateTime modifiedOn, String city,
-                        String state, String address) {
+                        String state, String address, Seller seller) {
         this.id = id;
         this.orderDetailsId = orderDetailsId;
         this.order = order;
@@ -76,6 +81,7 @@ public class OrderDetails {
         this.city = city;
         this.state = state;
         this.address = address;
+        this.seller = seller;
     }
 
     public Long getId() {
@@ -220,5 +226,13 @@ public class OrderDetails {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Seller getSeller() {
+        return seller;
+    }
+
+    public void setSeller(Seller seller) {
+        this.seller = seller;
     }
 }
