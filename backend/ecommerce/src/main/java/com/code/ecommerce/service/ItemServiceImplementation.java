@@ -4,6 +4,7 @@ import com.code.ecommerce.dto.requests.ItemRequest;
 import com.code.ecommerce.dto.requests.SellerItemRequest;
 import com.code.ecommerce.dto.response.ItemResponse;
 import com.code.ecommerce.dto.response.SellerItemResponse;
+import com.code.ecommerce.exceptions.InvalidItemException;
 import com.code.ecommerce.exceptions.InvalidSellerException;
 import com.code.ecommerce.pojo.Item;
 import com.code.ecommerce.pojo.Seller;
@@ -67,7 +68,7 @@ public class ItemServiceImplementation implements ItemService{
             item.setSku(sku);  // setting the sku for the item
 
             Item currentItem = itemRepository.save(item);  // saving and retrieving the current item
-            List<SellerItemResponse> merchants = this.generateSellerItemMappings(request.getSellers(), request, currentItem);  // getting the merchant data
+            List<SellerItemResponse> merchants = this.generateSellerItemMappings(request.getSellers(), currentItem);  // getting the merchant data
 
             ItemResponse response = generateResponse(currentItem);  // generating response
             response.setMerchants(merchants);  // setting the merchant data
@@ -95,8 +96,15 @@ public class ItemServiceImplementation implements ItemService{
     public ItemResponse getItemById(Long id) throws Exception {
         logger.info("Inside the fetch item by id method - ");
         try{
+            Item item = itemRepository.findById(id).orElseThrow(() ->
+                    new InvalidItemException("Invalid Item id. Item does not exist"));
 
-            return null;
+            List<SellerItemMapping> mapping = item.getSellers();  // getting the associated merchants for the item
+
+            ItemResponse response = this.generateResponse(item);  // getting the item response
+            response.setMerchants(this.generateSellerItemResponse(mapping));  // setting the info of the merchants associated
+
+            return response;  // returning the response
         } catch (Exception e) {
             logger.info("Error fetching item by id - {}", e.getMessage());
             throw new RuntimeException(e);
@@ -104,9 +112,21 @@ public class ItemServiceImplementation implements ItemService{
     }
 
     @Override
-    public void getAllItems() throws Exception {
+    public List<ItemResponse> getAllItems() throws Exception {
         logger.info("Inside the get all items method - ");
         try{
+            List<Item> items = itemRepository.findAll();  // getting the list of all the items
+
+            List<ItemResponse> responses = new ArrayList<>();  // list to add all the items in the needed response format
+            for(Item item : items){
+                ItemResponse response = this.generateResponse(item);  // generating response for the item
+                List<SellerItemMapping> mappings = item.getSellers();  // getting the merchants associated with the item
+
+                response.setMerchants(this.generateSellerItemResponse(mappings));  // setting the merchant details
+                responses.add(response);  // adding to the list of responses
+            }
+
+            return responses;  // returning the list of items in the response format
 
         } catch (Exception e) {
             logger.info("Error getting the list of all items - {}", e.getMessage());
@@ -135,13 +155,12 @@ public class ItemServiceImplementation implements ItemService{
      * Generates seller-item mappings for the specified item.
      *
      * @param sellerItemRequest the list of seller item requests
-     * @param itemRequest the item request containing item details
      * @param item the item entity to be associated with the sellers
      * @return responses for the mappings generated between merchant and the items
      */
-    public List<SellerItemResponse> generateSellerItemMappings(List<SellerItemRequest> sellerItemRequest, ItemRequest itemRequest,
+    public List<SellerItemResponse> generateSellerItemMappings(List<SellerItemRequest> sellerItemRequest,
                                            Item item){
-        List<SellerItemResponse> responses = new ArrayList<>();  // storing the responses
+        List<SellerItemMapping> itemMappingList = new ArrayList<>();
 
         for (SellerItemRequest sellerItemRequest1 : sellerItemRequest){
             SellerItemMapping mapping = new SellerItemMapping();
@@ -162,13 +181,13 @@ public class ItemServiceImplementation implements ItemService{
                     item.getCgst(), item.getSgst(), item.getIgst(), item.getVat(), item.getCess());
 
             mapping.setTotalCost(totalAmountWithTax);  // setting the final amount
-            sellerItemMappingRepository.save(mapping);  // saving the seller item mapping
+            SellerItemMapping currentMap = sellerItemMappingRepository.save(mapping);  // saving the seller item mapping
 
-            SellerItemResponse response = this.generateSellerItemResponse(currentSeller, mapping);
-            responses.add(response);
+            itemMappingList.add(currentMap);  // adding to the item mapping list
         }
 
-        return responses;
+        List<SellerItemResponse> response = this.generateSellerItemResponse(itemMappingList);
+        return response;
     }
 
     /**
@@ -235,18 +254,21 @@ public class ItemServiceImplementation implements ItemService{
     /**
      * Generates a seller item response by combining the seller details and the corresponding seller-item mapping information.
      *
-     * @param seller the seller entity
-     * @param mapping the seller-item mapping entity
+     * @param sellerItemList the list of all the seller item mappings to be converted to response format
      * @return the generated seller item response
      */
-    public SellerItemResponse generateSellerItemResponse(Seller seller, SellerItemMapping mapping){
-        SellerItemResponse response = new SellerItemResponse();
-        response.setAmount(mapping.getAmount());
-        response.setName(seller.getSellerName());
-        response.setOtherCharges(mapping.getOtherCharges());
-        response.setTransportationCharges(mapping.getTransportationCharges());
-        response.setFinalAmount(mapping.getTotalCost());
-        response.setQuantity(mapping.getAvailableQuantity());
-        return response;   // returning the response
+    public List<SellerItemResponse> generateSellerItemResponse(List<SellerItemMapping> sellerItemList){
+        List<SellerItemResponse> responses = new ArrayList<>();
+        for(SellerItemMapping mapping : sellerItemList){
+            SellerItemResponse response = new SellerItemResponse();
+            response.setAmount(mapping.getAmount());  // setting the amount without tax
+            response.setName(mapping.getSeller().getSellerName());   // setting the name of the merchant
+            response.setOtherCharges(mapping.getOtherCharges());  // setting the other charges
+            response.setTransportationCharges(mapping.getTransportationCharges());  // setting the transportation charges
+            response.setFinalAmount(mapping.getTotalCost());  // setting the cost with tax
+            response.setQuantity(mapping.getAvailableQuantity());  // setting the quantity
+            responses.add(response);   // adding the response to the list
+        }
+        return responses;  // returning the responses list
     }
 }
