@@ -21,13 +21,29 @@ public class OrderItemDetails {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
-    private double amount;  // the amount of one item
+    @Column(name = "amount_without_tax")
+    private Double amountWithoutTax;  // the amount of one item
+
+    @Column(name = "cgst_amount")
+    private Double cgstAmount;  // the amount of the cgst tax
+
+    @Column(name = "sgst_amount")
+    private Double sgstAmount;  // the amount of the sgst tax
+
+    @Column(name = "igst_amount")
+    private Double igstAmount;  // the amount of the igst tax
+
+    @Column(name = "vat_amount")
+    private Double vatAmount;  // the amount of the vat tax
+
+    @Column(name = "cess_amount")
+    private Double cessAmount;  // the amount of the cess tax
 
     @Column(nullable = false)
     private Double quantity;  // the quantity purchased
 
     @Column(name = "total_amount")
-    private double totalAmount;  // the total cost of one item
+    private Double totalAmount;  // the total cost of one item
 
     @Column(name = "created_on")
     private LocalDateTime createdOn;  // storing the creation date for the order
@@ -37,15 +53,21 @@ public class OrderItemDetails {
 
     public OrderItemDetails(){}
 
-    public OrderItemDetails(Long id, Order order, Item item, double amount, Double quantity, double totalAmount,
-                            LocalDateTime createdOn, LocalDateTime modifiedOn) {
+    public OrderItemDetails(Long id, Order order, Item item, Double amountWithoutTax, Double cgstAmount, Double sgstAmount,
+                            Double igstAmount, Double cessAmount, Double vatAmount, Double quantity, LocalDateTime createdOn,
+                            Double totalAmount, LocalDateTime modifiedOn) {
         this.id = id;
         this.order = order;
         this.item = item;
-        this.amount = amount;
+        this.amountWithoutTax = amountWithoutTax;
+        this.cgstAmount = cgstAmount;
+        this.sgstAmount = sgstAmount;
+        this.igstAmount = igstAmount;
+        this.cessAmount = cessAmount;
+        this.vatAmount = vatAmount;
         this.quantity = quantity;
-        this.totalAmount = totalAmount;
         this.createdOn = createdOn;
+        this.totalAmount = totalAmount;
         this.modifiedOn = modifiedOn;
     }
 
@@ -73,12 +95,12 @@ public class OrderItemDetails {
         this.item = item;
     }
 
-    public double getAmount() {
-        return amount;
+    public Double getAmountWithoutTax() {
+        return amountWithoutTax;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setAmountWithoutTax(Double amountWithoutTax) {
+        this.amountWithoutTax = amountWithoutTax;
     }
 
     public Double getQuantity() {
@@ -89,11 +111,11 @@ public class OrderItemDetails {
         this.quantity = quantity;
     }
 
-    public double getTotalAmount() {
+    public Double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(double totalAmount) {
+    public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
     }
 
@@ -111,5 +133,45 @@ public class OrderItemDetails {
 
     public void setModifiedOn(LocalDateTime modifiedOn) {
         this.modifiedOn = modifiedOn;
+    }
+
+    public Double getCgstAmount() {
+        return cgstAmount;
+    }
+
+    public void setCgstAmount(Double cgstAmount) {
+        this.cgstAmount = cgstAmount;
+    }
+
+    public Double getSgstAmount() {
+        return sgstAmount;
+    }
+
+    public void setSgstAmount(Double sgstAmount) {
+        this.sgstAmount = sgstAmount;
+    }
+
+    public Double getIgstAmount() {
+        return igstAmount;
+    }
+
+    public void setIgstAmount(Double igstAmount) {
+        this.igstAmount = igstAmount;
+    }
+
+    public Double getVatAmount() {
+        return vatAmount;
+    }
+
+    public void setVatAmount(Double vatAmount) {
+        this.vatAmount = vatAmount;
+    }
+
+    public Double getCessAmount() {
+        return cessAmount;
+    }
+
+    public void setCessAmount(Double cessAmount) {
+        this.cessAmount = cessAmount;
     }
 }

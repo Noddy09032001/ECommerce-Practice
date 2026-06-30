@@ -30,18 +30,13 @@ public class OrderDetails {
     @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;  // seller selling the item
 
-    private double amount;   // the amount before the taxes
-    private float cgst;
-    private float sgst;
-    private float igst;
-    private float vat;
-    private float cess;
+    private Double amount;   // the amount before the taxes
 
     @Column(name = "tax_amount")
-    private double totalTaxInAmount;   // the amount of the tax being paid
+    private Double totalTaxInAmount;   // the amount of the tax being paid
 
     @Column(name = "total_order_amount")
-    private double totalOrderAmount;  // the total amount of the order including taxes
+    private Double totalOrderAmount;  // the total amount of the order including taxes
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_mode")
@@ -58,31 +53,6 @@ public class OrderDetails {
     private String address;
 
     public OrderDetails(){}
-
-    public OrderDetails(Long id, String orderDetailsId, Order order, UserDetails user, double amount, float cgst,
-                        float sgst, float vat, float igst, double totalTaxInAmount, float cess, double totalOrderAmount,
-                        PaymentMethods paymentMode, LocalDateTime createdOn, LocalDateTime modifiedOn, String city,
-                        String state, String address, Seller seller) {
-        this.id = id;
-        this.orderDetailsId = orderDetailsId;
-        this.order = order;
-        this.user = user;
-        this.amount = amount;
-        this.cgst = cgst;
-        this.sgst = sgst;
-        this.vat = vat;
-        this.igst = igst;
-        this.totalTaxInAmount = totalTaxInAmount;
-        this.cess = cess;
-        this.totalOrderAmount = totalOrderAmount;
-        this.paymentMode = paymentMode;
-        this.createdOn = createdOn;
-        this.modifiedOn = modifiedOn;
-        this.city = city;
-        this.state = state;
-        this.address = address;
-        this.seller = seller;
-    }
 
     public Long getId() {
         return id;
@@ -124,59 +94,19 @@ public class OrderDetails {
         this.user = user;
     }
 
-    public float getCgst() {
-        return cgst;
-    }
-
-    public void setCgst(float cgst) {
-        this.cgst = cgst;
-    }
-
-    public float getSgst() {
-        return sgst;
-    }
-
-    public void setSgst(float sgst) {
-        this.sgst = sgst;
-    }
-
-    public float getVat() {
-        return vat;
-    }
-
-    public void setVat(float vat) {
-        this.vat = vat;
-    }
-
-    public float getIgst() {
-        return igst;
-    }
-
-    public void setIgst(float igst) {
-        this.igst = igst;
-    }
-
-    public float getCess() {
-        return cess;
-    }
-
-    public void setCess(float cess) {
-        this.cess = cess;
-    }
-
-    public double getTotalTaxInAmount() {
+    public Double getTotalTaxInAmount() {
         return totalTaxInAmount;
     }
 
-    public void setTotalTaxInAmount(double totalTaxInAmount) {
+    public void setTotalTaxInAmount(Double totalTaxInAmount) {
         this.totalTaxInAmount = totalTaxInAmount;
     }
 
-    public double getTotalOrderAmount() {
+    public Double getTotalOrderAmount() {
         return totalOrderAmount;
     }
 
-    public void setTotalOrderAmount(double totalOrderAmount) {
+    public void setTotalOrderAmount(Double totalOrderAmount) {
         this.totalOrderAmount = totalOrderAmount;
     }
 
