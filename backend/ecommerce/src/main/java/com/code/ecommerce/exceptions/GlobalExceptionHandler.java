@@ -78,4 +78,18 @@ public class GlobalExceptionHandler {
         response.setStatusCode(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);   // returning the response body
     }
+
+    /**
+     * handles the condition of invalid item fetching due to incorrect id's
+     * @param invalidSellerItemException the custom exception containing invalid seller item error message
+     * @return ResponseEntity containing a standardized ApiResponse with an appropriate HTTP error status
+     */
+    @ExceptionHandler(InvalidSellerItemException.class)
+    public ResponseEntity<ApiResponse> handleInvalidSellerItemException(InvalidSellerItemException invalidSellerItemException){
+        ApiResponse response = new ApiResponse();
+        response.setData(null);
+        response.setMessage(invalidSellerItemException.getMessage());
+        response.setStatusCode(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);   // returning the response body
+    }
 }
