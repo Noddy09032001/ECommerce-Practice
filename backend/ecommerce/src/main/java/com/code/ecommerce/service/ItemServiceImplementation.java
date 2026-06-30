@@ -186,8 +186,7 @@ public class ItemServiceImplementation implements ItemService{
             itemMappingList.add(currentMap);  // adding to the item mapping list
         }
 
-        List<SellerItemResponse> response = this.generateSellerItemResponse(itemMappingList);
-        return response;
+        return this.generateSellerItemResponse(itemMappingList);  // return the response
     }
 
     /**
