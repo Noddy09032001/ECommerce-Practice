@@ -4,23 +4,22 @@ import com.code.ecommerce.common.constants.OrderStatus;
 import com.code.ecommerce.dto.requests.orders.OrderItemRequest;
 import com.code.ecommerce.dto.requests.orders.OrderRequest;
 import com.code.ecommerce.exceptions.InvalidItemException;
+import com.code.ecommerce.exceptions.InvalidSellerItemException;
 import com.code.ecommerce.pojo.Item;
+import com.code.ecommerce.pojo.SellerItemMapping;
 import com.code.ecommerce.pojo.orders.Order;
 import com.code.ecommerce.pojo.orders.OrderDetails;
 import com.code.ecommerce.pojo.orders.OrderItemDetails;
-import com.code.ecommerce.repository.ItemRepository;
-import com.code.ecommerce.repository.OrderDetailsRepository;
-import com.code.ecommerce.repository.OrderItemDetailsRepository;
-import com.code.ecommerce.repository.OrderRepository;
+import com.code.ecommerce.pojo.orders.OrderStatusHistory;
+import com.code.ecommerce.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImplementation implements OrderService {
@@ -31,14 +30,17 @@ public class OrderServiceImplementation implements OrderService {
     private final OrderDetailsRepository orderDetailsRepository;
     private final OrderItemDetailsRepository orderItemDetailsRepository;
     private final ItemRepository itemRepository;
+    private final SellerItemMappingRepository sellerItemMappingRepository;
 
     @Autowired
     public OrderServiceImplementation(OrderRepository orderRepository, OrderDetailsRepository orderDetailsRepository,
-                                      OrderItemDetailsRepository orderItemDetailsRepository, ItemRepository itemRepository) {
+                                      OrderItemDetailsRepository orderItemDetailsRepository, ItemRepository itemRepository,
+                                      SellerItemMappingRepository sellerItemMappingRepository) {
         this.orderRepository = orderRepository;
         this.orderDetailsRepository = orderDetailsRepository;
         this.orderItemDetailsRepository = orderItemDetailsRepository;
         this.itemRepository = itemRepository;
+        this.sellerItemMappingRepository = sellerItemMappingRepository;
     }
 
     /**
@@ -77,11 +79,17 @@ public class OrderServiceImplementation implements OrderService {
             orderDetails.setCity(request.getAddress().getCity());
             orderDetails.setState(request.getAddress().getState());
             orderDetails.setAddress(request.getAddress().getStreet());
-            orderDetailsRepository.save(orderDetails);  // saving the order details data object
 
             // setting and generating the order items
             List<OrderItemDetails> items = this.generateOrderItems(request.getItems(), currentOrder);
             Double grandOrderTotal = this.getOrderGrandTotal(items);  // getting the grand total of the order
+
+
+            Map<String, Double> amounts = this.getOrderDetailsAmounts(items);  // getting the map of the amounts
+            orderDetails.setTotalTaxInAmount(amounts.get("tax_amount"));
+            orderDetails.setTotalOrderAmount(amounts.get("total_amount"));
+            orderDetails.setAmount(amounts.get("amount_without_tax"));
+            orderDetailsRepository.save(orderDetails);  // saving the order details data object
 
             currentOrder.setOrderItems(items);  // setting the order items for the current order
             currentOrder.setGrandTotal(grandOrderTotal);  // setting the total amount of the current order
@@ -89,6 +97,8 @@ public class OrderServiceImplementation implements OrderService {
             orderItemDetailsRepository.saveAll(items);  // saving the list of items in the current order
 
             orderRepository.save(currentOrder);  // saving the updated order model
+
+            OrderStatusHistory orderStatus = this.createOrderStatusHistory(currentOrder);  // getting the current status of the order
 
         } catch (Exception e) {
             logger.info("Error creating order: {}", e.getMessage());
@@ -155,7 +165,7 @@ public class OrderServiceImplementation implements OrderService {
         for (OrderItemRequest request : items){
             Item itemDetails = itemRepository.findById(request.getId())
                     .orElseThrow(() -> new InvalidItemException("Invalid Item Id. Item not found"));
-            OrderItemDetails orderItemDetails = generateOrderItemDetailsObject(itemDetails, request);
+            OrderItemDetails orderItemDetails = this.generateOrderItemDetailsObject(itemDetails, request);
             orderItemDetails.setOrder(order);  // setting the order for mapping
             details.add(orderItemDetails);  // adding to the list
         }
@@ -169,14 +179,26 @@ public class OrderServiceImplementation implements OrderService {
      * @return the order item details data object model
      */
     public OrderItemDetails generateOrderItemDetailsObject(Item details, OrderItemRequest request){
-        OrderItemDetails item = new OrderItemDetails();
-        item.setItem(details);  // setting the reference item details object
-        item.setAmount(details.getAmount());  // setting the individual amount
-        item.setTotalAmount(details.getTotalCost());  // setting the total amount after the taxes
-        item.setQuantity(request.getQuantity());  // setting the needed item quantity
-        item.setCreatedOn(LocalDateTime.now());
-        item.setModifiedOn(LocalDateTime.now());
-        return item;  // returning the item being generated
+        SellerItemMapping mapping = sellerItemMappingRepository.findByItemAndSeller(details.getId(), request.getSellerId());
+        if(mapping == null)
+            throw new InvalidSellerItemException("Invalid Credentials. Check for merchant id or the item id");
+
+        OrderItemDetails response = new OrderItemDetails();
+        response.setItem(details);  // setting the item
+        response.setAmountWithoutTax(mapping.getAmount());  // setting the amount
+        response.setTotalAmount(mapping.getTotalCost());  // setting the amount with the tax breakdowns
+        response.setQuantity(request.getQuantity());  // setting the requested qty
+        response.setCreatedOn(LocalDateTime.now());    // setting the creation date
+        response.setModifiedOn(LocalDateTime.now());  // setting the modified date
+
+        Double currentAmount = mapping.getAmount();
+        response.setCgstAmount(currentAmount * (details.getCgst()) / 100);  // adding the cgst amount
+        response.setSgstAmount(currentAmount * (details.getSgst()) / 100);  // adding the sgst amount
+        response.setIgstAmount(currentAmount * (details.getIgst()) / 100);  // adding the igst amount
+        response.setVatAmount(currentAmount * (details.getVat()) / 100);  // adding the vat amount
+        response.setCessAmount(currentAmount * (details.getCess()) / 100);  // adding the cess amount
+
+        return response;  // returning the order item details object
     }
 
     /**
@@ -190,4 +212,47 @@ public class OrderServiceImplementation implements OrderService {
             total = total + itemDetails.getTotalAmount();  // adding to the total amount
         return total;  // returning the total amount
     }
+
+    /**
+     * method - return the map of the amounts for the order details
+     * @param items the list of all the items for the given order
+     * @return the map of all the amounts
+     */
+    public Map<String, Double> getOrderDetailsAmounts(List<OrderItemDetails> items){
+        Map<String, Double> amounts = new HashMap<>();
+
+        Double amountWithoutTax = items.stream()
+                .filter(item -> item.getAmountWithoutTax() != null)
+                .mapToDouble(OrderItemDetails::getAmountWithoutTax)
+                .sum();
+        amounts.put("amount_without_tax", amountWithoutTax);  // setting the amount without tax
+
+        Double totalAmount = items.stream()
+                .filter(item -> item.getAmountWithoutTax() != null)
+                .mapToDouble(OrderItemDetails::getAmountWithoutTax)
+                .sum();
+        amounts.put("total_amount", totalAmount);  // setting the total amount with tax
+
+        Double totalTaxAmounts = totalAmount - amountWithoutTax;
+        amounts.put("tax_amount", totalTaxAmounts);  // setting the total tax amounts
+
+        return amounts;  // returning the map
+    }
+
+    /**
+     * Generates an entry for tracking the current order status journey for the given order
+     *
+     * @param order the order object containing the details of the order
+     * @return the order status object
+     */
+    public OrderStatusHistory createOrderStatusHistory(Order order){
+        OrderStatusHistory orderStatusHistory = new OrderStatusHistory();
+        orderStatusHistory.setOrder(order);  // setting the order object
+        orderStatusHistory.setStatus(order.getCurrentStatus());  // setting the status
+        orderStatusHistory.setStatusDate(LocalDateTime.now());  // setting the time of the change of the status
+
+        orderStatusHistory.setRemarks(String.valueOf(OrderStatus.valueOf(order.getCurrentStatus())));  // setting the remarks
+        return orderStatusHistory;   // returning the status object
+    }
+
 }
