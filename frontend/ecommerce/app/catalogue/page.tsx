@@ -1,4 +1,11 @@
-import ProductCard from "@/src/common/components/ProductCard";
+"use client";
+
+import { useState } from "react";
+
+import FilterSidebar from "@/src/common/components/catalogue/FilterSidebar";
+import ProductGrid from "@/src/common/components/catalogue/ProductGrid";
+import ProductPreview from "@/src/common/components/catalogue/ProductPreview";
+
 import { Product } from "@/src/common/types/products";
 
 const products: Product[] = [
@@ -6,7 +13,21 @@ const products: Product[] = [
     itemId: "ITM-1",
     itemName: "iPhone 16 Pro Max",
     sku: "IPH001",
-    itemDescription: "Apple iPhone 16 Pro Max 256 GB",
+    itemDescription: "Apple iPhone 16 Pro Max 256GB Titanium Edition",
+    images: [
+      {
+        id: "1",
+        url: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab",
+      },
+      {
+        id: "2",
+        url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9",
+      },
+      {
+        id: "3",
+        url: "https://images.unsplash.com/photo-1580910051074-3eb694886505",
+      },
+    ],
 
     sellers: [
       {
@@ -14,17 +35,20 @@ const products: Product[] = [
           sellerId: "SELLER-1",
           sellerName: "Vijay Sales",
         },
+
         amount: 100000,
         transportationCharges: 500,
         otherCharges: 100,
         totalCost: 118600,
         availableQuantity: 10,
       },
+
       {
         seller: {
           sellerId: "SELLER-2",
           sellerName: "iVenus",
         },
+
         amount: 99000,
         transportationCharges: 200,
         otherCharges: 50,
@@ -36,9 +60,23 @@ const products: Product[] = [
 
   {
     itemId: "ITM-2",
-    itemName: "Airpods Pro",
+    itemName: "AirPods Pro",
     sku: "AIR001",
-    itemDescription: "Apple Airpods Pro Gen 2",
+    itemDescription: "Apple AirPods Pro 2nd Generation",
+    images: [
+      {
+        id: "1",
+        url: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1",
+      },
+      {
+        id: "2",
+        url: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb",
+      },
+      {
+        id: "3",
+        url: "https://images.unsplash.com/photo-1545127398-14699f92334b",
+      },
+    ],
 
     sellers: [
       {
@@ -46,6 +84,7 @@ const products: Product[] = [
           sellerId: "SELLER-1",
           sellerName: "Vijay Sales",
         },
+
         amount: 22000,
         transportationCharges: 100,
         otherCharges: 50,
@@ -57,21 +96,34 @@ const products: Product[] = [
 ];
 
 export default function CataloguePage() {
-  return (
-    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white p-8 transition-colors">
-      <div className="flex justify-between items-center mb-10">
-        <h1 className="text-4xl font-bold">
-          Product Catalogue
-        </h1>
-      </div>
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <ProductCard
-            key={product.itemId}
-            product={product}
+  return (
+    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
+      <div className="max-w-[1900px] mx-auto p-6">
+        <div
+          className={
+            selectedProduct
+              ? "grid grid-cols-[280px_minmax(0,1fr)_500px] gap-6"
+              : "grid grid-cols-[280px_minmax(0,1fr)] gap-6"
+          }
+        >
+          {/* filters */}
+
+          <FilterSidebar />
+
+          {/* catalogue */}
+
+          <ProductGrid
+            products={products}
+            onSelect={setSelectedProduct}
+            previewOpen={selectedProduct !== null}
           />
-        ))}
+
+          {/* preview */}
+
+          {selectedProduct && <ProductPreview product={selectedProduct} />}
+        </div>
       </div>
     </main>
   );
