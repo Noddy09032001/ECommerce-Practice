@@ -31,8 +31,8 @@ public class PaymentServiceImplementation implements PaymentService{
     public String initiatePayment(List<OrderItemDetails> items) throws Exception {
         logger.info("Inside the initiate payment method - ");
         try{
-            StripeClient client = new StripeClient(stripeApiKey);
-            List<SessionCreateParams.LineItem> lineItems = new ArrayList<>();
+            StripeClient client = new StripeClient(stripeApiKey);  // initialize the stripe client object
+            List<SessionCreateParams.LineItem> lineItems = new ArrayList<>();  // creating a list for adding the items
 
             for(OrderItemDetails item : items){
                 SessionCreateParams.LineItem item1 = SessionCreateParams.LineItem.builder()
@@ -50,7 +50,7 @@ public class PaymentServiceImplementation implements PaymentService{
                                         .build()
                         )
                         .build();
-                lineItems.add(item1);
+                lineItems.add(item1);  // adding the items to the list
             }
 
 
