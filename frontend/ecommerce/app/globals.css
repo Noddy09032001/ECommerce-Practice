@@ -1,42 +1,112 @@
 @import "tailwindcss";
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
+:root {
 
-:root{
-    --background:#ffffff;
-    --foreground:#09090b;
-    --card:#ffffff;
-    --border:#e4e4e7;
-    --muted:#71717a;
+  /* backgrounds */
+
+  --background: #f8fafc;
+  --card: #ffffff;
+  --secondary-bg: #f1f5f9;
+
+  /* text */
+
+  --foreground: #0f172a;
+  --foreground-secondary: #64748b;
+
+  /* borders */
+
+  --border: #e2e8f0;
+
+  /* primary */
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+
+  /* status */
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
 }
 
-.dark{
-    --background:#09090b;
-    --foreground:#fafafa;
-    --card:#18181b;
-    --border:#27272a;
-    --muted:#a1a1aa;
+.dark {
+
+  /* backgrounds */
+
+  --background: #09090b;
+  --card: #18181b;
+  --secondary-bg: #27272a;
+
+  /* text */
+
+  --foreground: #fafafa;
+  --foreground-secondary: #a1a1aa;
+
+  /* borders */
+
+  --border: #3f3f46;
+
+  /* primary */
+
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+
+  /* status */
+
+  --success: #22c55e;
+  --warning: #fbbf24;
+  --danger: #ef4444;
 }
 
 @theme inline {
+
+  /* default */
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* surfaces */
+
+  --color-card: var(--card);
+  --color-secondary-bg: var(--secondary-bg);
+
+  /* text */
+
+  --color-foreground-secondary: var(--foreground-secondary);
+
+  /* borders */
+
+  --color-border: var(--border);
+
+  /* actions */
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+
+  /* status */
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  /* fonts */
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* disable browser automatic dark theme */
+
+@media(prefers-color-scheme:dark) {
+  :root {}
 }
 
 body {
@@ -45,4 +115,49 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
+  transition:
+    background-color .2s ease,
+    color .2s ease;
+}
+
+/* utility classes */
+
+.bg-card {
+  background-color: var(--card);
+}
+
+.bg-secondary-bg {
+  background-color: var(--secondary-bg);
+}
+
+.border-default {
+  border-color: var(--border);
+}
+
+.text-secondary {
+  color: var(--foreground-secondary);
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.bg-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.text-success {
+  color: var(--success);
+}
+
+.text-warning {
+  color: var(--warning);
+}
+
+.text-danger {
+  color: var(--danger);
 }

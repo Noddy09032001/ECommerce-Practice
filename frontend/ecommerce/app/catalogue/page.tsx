@@ -28,27 +28,23 @@ const products: Product[] = [
         url: "https://images.unsplash.com/photo-1580910051074-3eb694886505",
       },
     ],
-
     sellers: [
       {
         seller: {
           sellerId: "SELLER-1",
           sellerName: "Vijay Sales",
         },
-
         amount: 100000,
         transportationCharges: 500,
         otherCharges: 100,
         totalCost: 118600,
         availableQuantity: 10,
       },
-
       {
         seller: {
           sellerId: "SELLER-2",
           sellerName: "iVenus",
         },
-
         amount: 99000,
         transportationCharges: 200,
         otherCharges: 50,
@@ -77,14 +73,12 @@ const products: Product[] = [
         url: "https://images.unsplash.com/photo-1545127398-14699f92334b",
       },
     ],
-
     sellers: [
       {
         seller: {
           sellerId: "SELLER-1",
           sellerName: "Vijay Sales",
         },
-
         amount: 22000,
         transportationCharges: 100,
         otherCharges: 50,
@@ -99,7 +93,7 @@ export default function CataloguePage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   return (
-    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
+    <main className="min-h-screen bg-background text-foreground transition-colors duration-200">
       <div className="max-w-[1900px] mx-auto p-6">
         <div
           className={
