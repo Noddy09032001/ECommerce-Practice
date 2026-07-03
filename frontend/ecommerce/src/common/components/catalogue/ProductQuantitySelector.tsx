@@ -15,16 +15,18 @@ export default function ProductQuantitySelector({
     <div className="flex items-center gap-4">
       <button
         onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-        className="h-10 w-10 rounded-lg border border-zinc-200 dark:border-zinc-700"
+        className="h-10 w-10 rounded-lg border border-default bg-card text-foreground hover:bg-secondary-bg transition-colors"
       >
         -
       </button>
 
-      <div className="w-12 text-center font-semibold">{quantity}</div>
+      <div className="w-12 text-center font-semibold text-foreground">
+        {quantity}
+      </div>
 
       <button
         onClick={() => quantity < max && setQuantity(quantity + 1)}
-        className="h-10 w-10 rounded-lg border border-zinc-200 dark:border-zinc-700"
+        className="h-10 w-10 rounded-lg border border-default bg-card text-foreground hover:bg-secondary-bg transition-colors"
       >
         +
       </button>

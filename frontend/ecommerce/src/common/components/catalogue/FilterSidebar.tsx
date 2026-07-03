@@ -9,7 +9,7 @@ export default function FilterSidebar() {
   });
 
   return (
-    <aside className="sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 transition-colors">
+    <aside className="sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto bg-card border border-default rounded-2xl p-6 transition-colors">
       {/* title */}
 
       <div className="flex justify-between items-center">
@@ -23,22 +23,26 @@ export default function FilterSidebar() {
 
         <div className="mt-4 space-y-3">
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" className="h-4 w-4" />
+            <input type="checkbox" className="h-4 w-4 accent-primary" />
+
             <span>Mobile Phones</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" className="h-4 w-4" />
+            <input type="checkbox" className="h-4 w-4 accent-primary" />
+
             <span>Laptops</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" className="h-4 w-4" />
+            <input type="checkbox" className="h-4 w-4 accent-primary" />
+
             <span>Tablets</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" className="h-4 w-4" />
+            <input type="checkbox" className="h-4 w-4 accent-primary" />
+
             <span>Audio</span>
           </label>
         </div>
@@ -60,7 +64,7 @@ export default function FilterSidebar() {
                   min: Number(e.target.value),
                 })
               }
-              className="w-full p-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+              className="w-full p-3 rounded-xl border border-default bg-secondary-bg outline-none"
             />
 
             <input
@@ -72,7 +76,7 @@ export default function FilterSidebar() {
                   max: Number(e.target.value),
                 })
               }
-              className="w-full p-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+              className="w-full p-3 rounded-xl border border-default bg-secondary-bg outline-none"
             />
           </div>
 
@@ -87,7 +91,7 @@ export default function FilterSidebar() {
                 max: Number(e.target.value),
               })
             }
-            className="mt-6 w-full"
+            className="mt-6 w-full accent-primary"
           />
         </div>
       </div>
@@ -99,22 +103,26 @@ export default function FilterSidebar() {
 
         <div className="mt-4 space-y-3">
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" />
+            <input type="checkbox" className="accent-primary" />
+
             <span>Vijay Sales</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" />
+            <input type="checkbox" className="accent-primary" />
+
             <span>iVenus</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" />
+            <input type="checkbox" className="accent-primary" />
+
             <span>Reliance Digital</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" />
+            <input type="checkbox" className="accent-primary" />
+
             <span>Croma</span>
           </label>
         </div>
@@ -127,7 +135,8 @@ export default function FilterSidebar() {
 
         <div className="mt-4">
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" />
+            <input type="checkbox" className="accent-primary" />
+
             <span>In Stock Only</span>
           </label>
         </div>
@@ -140,22 +149,31 @@ export default function FilterSidebar() {
 
         <div className="mt-4 space-y-3">
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="sort" defaultChecked />
+            <input
+              type="radio"
+              name="sort"
+              defaultChecked
+              className="accent-primary"
+            />
+
             <span>Price Low To High</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="sort" />
+            <input type="radio" name="sort" className="accent-primary" />
+
             <span>Price High To Low</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="sort" />
+            <input type="radio" name="sort" className="accent-primary" />
+
             <span>Newest First</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="sort" />
+            <input type="radio" name="sort" className="accent-primary" />
+
             <span>Popularity</span>
           </label>
         </div>

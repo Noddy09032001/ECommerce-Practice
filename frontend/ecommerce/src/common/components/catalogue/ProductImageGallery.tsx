@@ -14,7 +14,7 @@ export default function ProductImageGallery({ images }: Props) {
     <div>
       {/* main image */}
 
-      <div className="h-96 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center">
+      <div className="h-96 rounded-2xl bg-secondary-bg border border-default flex items-center justify-center transition-colors">
         <img src={selectedImage?.url} className="max-h-80 object-contain" />
       </div>
 
@@ -25,10 +25,10 @@ export default function ProductImageGallery({ images }: Props) {
           <button
             key={image.id}
             onClick={() => setSelectedImage(image)}
-            className={`h-20 w-20 rounded-xl border overflow-hidden flex-shrink-0 ${
+            className={`h-20 w-20 rounded-xl overflow-hidden flex-shrink-0 transition-colors ${
               selectedImage?.id === image.id
-                ? "border-black dark:border-white"
-                : "border-zinc-200 dark:border-zinc-800"
+                ? "border-2 border-primary"
+                : "border border-default"
             }`}
           >
             <img src={image.url} className="h-full w-full object-cover" />

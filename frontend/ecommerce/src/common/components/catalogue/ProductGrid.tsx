@@ -20,14 +20,16 @@ export default function ProductGrid({
 
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Product Catalogue</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Product Catalogue
+          </h1>
 
-          <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-secondary">
             Showing {products.length} products
           </p>
         </div>
 
-        <select className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
+        <select className="px-4 py-2 rounded-xl border border-default bg-card text-foreground transition-colors">
           <option>Price: Low To High</option>
 
           <option>Price: High To Low</option>
@@ -60,23 +62,23 @@ export default function ProductGrid({
 
       <div className="mt-16 flex justify-center">
         <div className="flex items-center gap-3">
-          <button className="h-10 w-10 rounded-xl border border-zinc-200 dark:border-zinc-700">
+          <button className="h-10 w-10 rounded-xl border border-default bg-card text-foreground transition-colors">
             {"<"}
           </button>
 
-          <button className="h-10 w-10 rounded-xl bg-black dark:bg-white text-white dark:text-black">
+          <button className="h-10 w-10 rounded-xl bg-primary text-primary-foreground transition-colors">
             1
           </button>
 
-          <button className="h-10 w-10 rounded-xl border border-zinc-200 dark:border-zinc-700">
+          <button className="h-10 w-10 rounded-xl border border-default bg-card text-foreground transition-colors">
             2
           </button>
 
-          <button className="h-10 w-10 rounded-xl border border-zinc-200 dark:border-zinc-700">
+          <button className="h-10 w-10 rounded-xl border border-default bg-card text-foreground transition-colors">
             3
           </button>
 
-          <button className="h-10 w-10 rounded-xl border border-zinc-200 dark:border-zinc-700">
+          <button className="h-10 w-10 rounded-xl border border-default bg-card text-foreground transition-colors">
             {">"}
           </button>
         </div>

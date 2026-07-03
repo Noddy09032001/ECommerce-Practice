@@ -24,7 +24,7 @@ export default function ProductPreview({ product }: Props) {
   const [quantity, setQuantity] = useState(1);
 
   return (
-    <div className="sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+    <div className="sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto bg-card border border-default rounded-2xl p-6 transition-colors">
       {/* gallery */}
 
       <ProductImageGallery images={product.images} />
@@ -32,22 +32,22 @@ export default function ProductPreview({ product }: Props) {
       {/* title */}
 
       <div className="mt-8">
-        <h1 className="text-3xl font-bold">{product.itemName}</h1>
+        <h1 className="text-3xl font-bold text-foreground">
+          {product.itemName}
+        </h1>
 
-        <p className="mt-3 text-zinc-500 dark:text-zinc-400">
-          {product.itemDescription}
-        </p>
+        <p className="mt-3 text-secondary">{product.itemDescription}</p>
 
-        <p className="mt-3 text-sm text-zinc-500">SKU : {product.sku}</p>
+        <p className="mt-3 text-sm text-secondary">SKU : {product.sku}</p>
       </div>
 
       {/* seller */}
 
       <div className="mt-8">
-        <label className="font-semibold">Seller</label>
+        <label className="font-semibold text-foreground">Seller</label>
 
         <select
-          className="mt-3 w-full p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+          className="mt-3 w-full p-4 rounded-xl border border-default bg-card text-foreground outline-none transition-colors"
           onChange={(e) =>
             setSelectedSeller(product.sellers[Number(e.target.value)])
           }
@@ -63,27 +63,27 @@ export default function ProductPreview({ product }: Props) {
       {/* pricing */}
 
       <div className="mt-8 space-y-4">
-        <div className="flex justify-between">
+        <div className="flex justify-between text-secondary">
           <span>Base Price</span>
 
           <span>₹{selectedSeller.amount}</span>
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex justify-between text-secondary">
           <span>Transportation</span>
 
           <span>₹{selectedSeller.transportationCharges}</span>
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex justify-between text-secondary">
           <span>Other Charges</span>
 
           <span>₹{selectedSeller.otherCharges}</span>
         </div>
 
-        <hr className="border-zinc-200 dark:border-zinc-800" />
+        <hr className="border-default" />
 
-        <div className="flex justify-between text-2xl font-bold">
+        <div className="flex justify-between text-2xl font-bold text-foreground">
           <span>Total</span>
 
           <span>₹{selectedSeller.totalCost}</span>
@@ -93,7 +93,7 @@ export default function ProductPreview({ product }: Props) {
       {/* inventory */}
 
       <div className="mt-8">
-        <p className="text-green-600 dark:text-green-400">
+        <p className="text-success">
           Available : {selectedSeller.availableQuantity}
         </p>
       </div>
@@ -101,7 +101,7 @@ export default function ProductPreview({ product }: Props) {
       {/* quantity */}
 
       <div className="mt-8">
-        <label className="font-semibold">Quantity</label>
+        <label className="font-semibold text-foreground">Quantity</label>
 
         <div className="mt-3">
           <ProductQuantitySelector
@@ -128,7 +128,7 @@ export default function ProductPreview({ product }: Props) {
             totalCost: selectedSeller.totalCost,
           })
         }
-        className="mt-10 w-full py-4 rounded-xl bg-black dark:bg-white text-white dark:text-black font-semibold transition"
+        className="mt-10 w-full py-4 rounded-xl bg-primary text-white font-semibold transition-colors hover:opacity-90"
       >
         Add To Cart
       </button>
