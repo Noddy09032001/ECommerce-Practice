@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ItemRepository extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long>, ItemSearchRepository {
 
     @Query("SELECT MAX(i.id) FROM Item i")
     Long getLatestId();   // getting the latest id for the item
