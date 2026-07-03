@@ -2,11 +2,12 @@ package com.code.ecommerce.pojo;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "seller_item_mapping")
-public class SellerItemMapping {
+public class SellerItemMapping implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

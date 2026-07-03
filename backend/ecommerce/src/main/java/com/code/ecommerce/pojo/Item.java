@@ -3,13 +3,14 @@ package com.code.ecommerce.pojo;
 import com.code.ecommerce.pojo.orders.OrderItemDetails;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "item_details")
-public class Item {
+public class Item implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

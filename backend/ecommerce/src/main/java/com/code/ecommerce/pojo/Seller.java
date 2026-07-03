@@ -3,6 +3,7 @@ package com.code.ecommerce.pojo;
 import com.code.ecommerce.pojo.orders.OrderItemDetails;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 // merchant or seller details for the items
 @Entity
 @Table(name = "seller")
-public class Seller {
+public class Seller implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
