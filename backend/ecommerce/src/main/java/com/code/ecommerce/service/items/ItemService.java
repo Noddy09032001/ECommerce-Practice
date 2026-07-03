@@ -1,4 +1,4 @@
-package com.code.ecommerce.service;
+package com.code.ecommerce.service.items;
 
 import com.code.ecommerce.dto.requests.ItemRequest;
 import com.code.ecommerce.dto.response.ItemResponse;

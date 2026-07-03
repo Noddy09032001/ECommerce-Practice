@@ -1,4 +1,4 @@
-package com.code.ecommerce.service;
+package com.code.ecommerce.service.items;
 
 import com.code.ecommerce.dto.requests.ItemRequest;
 import com.code.ecommerce.dto.requests.SellerItemRequest;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ItemServiceImplementation implements ItemService{
+public class ItemServiceImplementation implements ItemService {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemServiceImplementation.class);
     private final ItemRepository itemRepository;
