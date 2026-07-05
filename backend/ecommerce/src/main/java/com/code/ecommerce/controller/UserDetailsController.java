@@ -7,7 +7,7 @@ import com.code.ecommerce.dto.response.ApiResponse;
 import com.code.ecommerce.dto.response.UserDetailsResponse;
 import com.code.ecommerce.exceptions.InvalidCredentialsException;
 import com.code.ecommerce.exceptions.UserExistsException;
-import com.code.ecommerce.service.UserDetailsService;
+import com.code.ecommerce.service.users.UserDetailsService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
