@@ -23,10 +23,6 @@ public class OrderDetails {
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserDetails user;   // the order is for which user
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;  // seller selling the item
 
@@ -53,6 +49,23 @@ public class OrderDetails {
     private String address;
 
     public OrderDetails(){}
+
+    public OrderDetails(Long id, String orderDetailsId, Order order, Seller seller, Double amount, Double totalTaxInAmount, PaymentMethods paymentMode,
+                        Double totalOrderAmount, LocalDateTime createdOn, LocalDateTime modifiedOn, String city, String state, String address) {
+        this.id = id;
+        this.orderDetailsId = orderDetailsId;
+        this.order = order;
+        this.seller = seller;
+        this.amount = amount;
+        this.totalTaxInAmount = totalTaxInAmount;
+        this.paymentMode = paymentMode;
+        this.totalOrderAmount = totalOrderAmount;
+        this.createdOn = createdOn;
+        this.modifiedOn = modifiedOn;
+        this.city = city;
+        this.state = state;
+        this.address = address;
+    }
 
     public Long getId() {
         return id;
@@ -84,14 +97,6 @@ public class OrderDetails {
 
     public void setAmount(double amount) {
         this.amount = amount;
-    }
-
-    public UserDetails getUser() {
-        return user;
-    }
-
-    public void setUser(UserDetails user) {
-        this.user = user;
     }
 
     public Double getTotalTaxInAmount() {

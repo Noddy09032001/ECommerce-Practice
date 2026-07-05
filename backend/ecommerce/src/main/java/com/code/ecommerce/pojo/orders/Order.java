@@ -18,6 +18,10 @@ public class Order {
     @Column(name = "order_id", nullable = false, unique = true)
     private String orderId;  // the order id being generated
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserDetails user;   // the order is for which user
+
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private OrderDetails orderDetails;
 
@@ -50,11 +54,12 @@ public class Order {
 
     public Order(){}
 
-    public Order(Long id, String orderId, List<OrderItemDetails> orderItems, OrderDetails orderDetails,
+    public Order(Long id, String orderId, UserDetails user, List<OrderItemDetails> orderItems, OrderDetails orderDetails,
                  List<OrderStatusHistory> orderStatuses, LocalDateTime createdOn, LocalDateTime modifiedOn,
                  String createdBy, String modifiedBy, String currentStatus, Integer totalItems, Double grandTotal) {
         this.id = id;
         this.orderId = orderId;
+        this.user = user;
         this.orderItems = orderItems;
         this.orderDetails = orderDetails;
         this.orderStatuses = orderStatuses;
@@ -81,6 +86,14 @@ public class Order {
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
+    }
+
+    public UserDetails getUser() {
+        return user;
+    }
+
+    public void setUser(UserDetails user) {
+        this.user = user;
     }
 
     public LocalDateTime getCreatedOn() {
