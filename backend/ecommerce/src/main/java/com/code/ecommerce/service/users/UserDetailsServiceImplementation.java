@@ -1,7 +1,6 @@
-package com.code.ecommerce.service;
+package com.code.ecommerce.service.users;
 
 import com.code.ecommerce.dto.requests.UserDetailsRequest;
-import com.code.ecommerce.dto.response.ApiResponse;
 import com.code.ecommerce.dto.response.UserDetailsResponse;
 import com.code.ecommerce.exceptions.InvalidCredentialsException;
 import com.code.ecommerce.exceptions.UserExistsException;
@@ -14,7 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserDetailsServiceImplementation implements UserDetailsService{
+public class UserDetailsServiceImplementation implements UserDetailsService {
 
     private final UserDetailsRepository userDetailsRepository;
     private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImplementation.class);
@@ -99,5 +98,20 @@ public class UserDetailsServiceImplementation implements UserDetailsService{
         response.setState(user.getState());
 
         return response;  // returning the response
+    }
+
+    /**
+     * Fetches the user object based on the email and the phone number
+     *
+     * @param email the email associated with the user
+     * @param phoneNumber the phone number associated with the user
+     * @return the user object associated with the email and the phone number
+     */
+    @Override
+    public UserDetails fetchUserByEmailAndPhoneNumber(String email, String phoneNumber){
+        UserDetails details = userDetailsRepository.findUserDetailsByEmailAndPhoneNumber(email, phoneNumber);
+        if(details == null)
+            throw new InvalidCredentialsException("Invalid email or phone number. Check again");
+        return details;
     }
 }
