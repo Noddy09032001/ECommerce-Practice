@@ -1,4 +1,4 @@
-package com.code.ecommerce.dto.response;
+package com.code.ecommerce.dto.response.itemSearch;
 
 public class ItemCatalogueResponse {
 
