@@ -7,11 +7,13 @@ import com.code.ecommerce.exceptions.InvalidItemException;
 import com.code.ecommerce.exceptions.InvalidSellerItemException;
 import com.code.ecommerce.pojo.Item;
 import com.code.ecommerce.pojo.SellerItemMapping;
+import com.code.ecommerce.pojo.UserDetails;
 import com.code.ecommerce.pojo.orders.Order;
 import com.code.ecommerce.pojo.orders.OrderDetails;
 import com.code.ecommerce.pojo.orders.OrderItemDetails;
 import com.code.ecommerce.pojo.orders.OrderStatusHistory;
 import com.code.ecommerce.repository.*;
+import com.code.ecommerce.service.users.UserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +33,18 @@ public class OrderServiceImplementation implements OrderService {
     private final OrderItemDetailsRepository orderItemDetailsRepository;
     private final ItemRepository itemRepository;
     private final SellerItemMappingRepository sellerItemMappingRepository;
+    private final UserDetailsService userDetailsService;
 
     @Autowired
     public OrderServiceImplementation(OrderRepository orderRepository, OrderDetailsRepository orderDetailsRepository,
                                       OrderItemDetailsRepository orderItemDetailsRepository, ItemRepository itemRepository,
-                                      SellerItemMappingRepository sellerItemMappingRepository) {
+                                      SellerItemMappingRepository sellerItemMappingRepository, UserDetailsService userDetailsService) {
         this.orderRepository = orderRepository;
         this.orderDetailsRepository = orderDetailsRepository;
         this.orderItemDetailsRepository = orderItemDetailsRepository;
         this.itemRepository = itemRepository;
         this.sellerItemMappingRepository = sellerItemMappingRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     /**
@@ -71,6 +75,9 @@ public class OrderServiceImplementation implements OrderService {
 
             order.setTotalItems(request.getItems().size());  // setting the total items in the order
             order.setCurrentStatus(OrderStatus.ORDER_CREATED.toString());  // setting the current status of the order created
+
+            UserDetails userDetails = this.generateUserDetailsForOrder(request.getUser().getEmail(), request.getUser().getPhoneNumber());
+            order.setUser(userDetails);  // setting the current user for the order
 
             Order currentOrder = orderRepository.save(order);  // saving and returning the current order id
             orderDetails.setOrder(currentOrder);  // saving the current order inside the order details
@@ -253,6 +260,17 @@ public class OrderServiceImplementation implements OrderService {
 
         orderStatusHistory.setRemarks(String.valueOf(OrderStatus.valueOf(order.getCurrentStatus())));  // setting the remarks
         return orderStatusHistory;   // returning the status object
+    }
+
+    /**
+     *
+     *
+     * @param email
+     * @param phoneNumber
+     * @return
+     */
+    public UserDetails generateUserDetailsForOrder(String email, String phoneNumber){
+        return userDetailsService.fetchUserByEmailAndPhoneNumber(email, phoneNumber);
     }
 
 }
