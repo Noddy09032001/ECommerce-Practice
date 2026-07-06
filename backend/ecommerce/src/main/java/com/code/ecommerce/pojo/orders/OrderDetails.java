@@ -2,7 +2,6 @@ package com.code.ecommerce.pojo.orders;
 
 import com.code.ecommerce.common.constants.PaymentMethods;
 import com.code.ecommerce.pojo.Seller;
-import com.code.ecommerce.pojo.UserDetails;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
