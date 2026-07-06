@@ -1,9 +1,10 @@
 package com.code.ecommerce.controller;
 
-import com.code.ecommerce.dto.requests.ItemSearchRequest;
-import com.code.ecommerce.dto.requests.orders.OrderSearchRequest;
+import com.code.ecommerce.dto.requests.itemSearch.ItemSearchRequest;
+import com.code.ecommerce.dto.requests.orderSearch.OrderSearchRequest;
 import com.code.ecommerce.dto.response.ApiResponse;
-import com.code.ecommerce.dto.response.ItemCatalogueResponse;
+import com.code.ecommerce.dto.response.itemSearch.ItemCatalogueResponse;
+import com.code.ecommerce.dto.response.orderSearch.OrderSearchResponse;
 import com.code.ecommerce.service.search.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,7 +50,7 @@ public class SearchController {
      */
     @PostMapping("/orders-search")
     public ResponseEntity<?> searchOrders(@RequestBody OrderSearchRequest request){
-        Page<?> response = searchService.searchOrder(request);  // getting the paginated response
+        Page<OrderSearchResponse> response = searchService.searchOrder(request);  // getting the paginated response
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setData(response);  // setting the response in the data of the api response body
         apiResponse.setMessage("Data for the search filters for the orders found successfully");  // setting the message
