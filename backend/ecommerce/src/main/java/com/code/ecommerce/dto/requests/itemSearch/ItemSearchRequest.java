@@ -1,4 +1,4 @@
-package com.code.ecommerce.dto.requests;
+package com.code.ecommerce.dto.requests.itemSearch;
 
 import java.util.List;
 
