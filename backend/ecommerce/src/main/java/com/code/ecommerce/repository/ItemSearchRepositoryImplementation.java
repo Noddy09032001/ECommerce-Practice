@@ -1,11 +1,10 @@
 package com.code.ecommerce.repository;
 
-import com.code.ecommerce.dto.requests.ItemSearchRequest;
-import com.code.ecommerce.dto.response.ItemCatalogueResponse;
+import com.code.ecommerce.dto.requests.itemSearch.ItemSearchRequest;
+import com.code.ecommerce.dto.response.itemSearch.ItemCatalogueResponse;
 import com.code.ecommerce.pojo.Item;
 import com.code.ecommerce.pojo.Seller;
 import com.code.ecommerce.pojo.SellerItemMapping;
-import com.code.ecommerce.service.search.SearchServiceImplementation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -30,9 +29,10 @@ public class ItemSearchRepositoryImplementation implements ItemSearchRepository{
     private static final Logger logger = LoggerFactory.getLogger(ItemSearchRepositoryImplementation.class);  // getting the logger
 
     /**
+     * Returns the item catalogue based on the search parameters
      *
-     * @param request
-     * @return
+     * @param request the request containing the details of the search parameters
+     * @return the item catalogue based on the search filters
      */
     @Override
     public Page<ItemCatalogueResponse> searchItems(ItemSearchRequest request) {

@@ -1,7 +1,7 @@
 package com.code.ecommerce.repository;
 
-import com.code.ecommerce.dto.requests.ItemSearchRequest;
-import com.code.ecommerce.dto.response.ItemCatalogueResponse;
+import com.code.ecommerce.dto.requests.itemSearch.ItemSearchRequest;
+import com.code.ecommerce.dto.response.itemSearch.ItemCatalogueResponse;
 import org.springframework.data.domain.Page;
 
 public interface ItemSearchRepository {
