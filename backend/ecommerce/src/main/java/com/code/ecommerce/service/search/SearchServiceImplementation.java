@@ -3,6 +3,7 @@ package com.code.ecommerce.service.search;
 import com.code.ecommerce.dto.requests.itemSearch.ItemSearchRequest;
 import com.code.ecommerce.dto.requests.orderSearch.OrderSearchRequest;
 import com.code.ecommerce.dto.response.itemSearch.ItemCatalogueResponse;
+import com.code.ecommerce.dto.response.orderSearch.OrderSearchResponse;
 import com.code.ecommerce.repository.ItemRepository;
 
 import com.code.ecommerce.repository.OrderRepository;
@@ -38,7 +39,7 @@ public class SearchServiceImplementation implements SearchService{
     }
 
     @Override
-    public Page<?> searchOrder(OrderSearchRequest request) {
+    public Page<OrderSearchResponse> searchOrder(OrderSearchRequest request) {
         logger.info("Inside the search orders service method - ");
         return orderRepository.searchOrder(request);
     }
