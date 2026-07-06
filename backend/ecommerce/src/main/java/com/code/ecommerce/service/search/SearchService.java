@@ -1,8 +1,8 @@
 package com.code.ecommerce.service.search;
 
-import com.code.ecommerce.dto.requests.ItemSearchRequest;
-import com.code.ecommerce.dto.requests.orders.OrderSearchRequest;
-import com.code.ecommerce.dto.response.ItemCatalogueResponse;
+import com.code.ecommerce.dto.requests.itemSearch.ItemSearchRequest;
+import com.code.ecommerce.dto.requests.orderSearch.OrderSearchRequest;
+import com.code.ecommerce.dto.response.itemSearch.ItemCatalogueResponse;
 import org.springframework.data.domain.Page;
 
 public interface SearchService {
