@@ -8,6 +8,10 @@ html {
   box-sizing: border-box;
 }
 
+/* ================================================= */
+/* LIGHT THEME */
+/* ================================================= */
+
 :root {
 
   /* backgrounds */
@@ -35,7 +39,17 @@ html {
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
+
+  /* shadows */
+
+  --shadow:
+    0 1px 2px rgba(0,0,0,.04),
+    0 4px 20px rgba(0,0,0,.06);
 }
+
+/* ================================================= */
+/* DARK THEME */
+/* ================================================= */
 
 .dark {
 
@@ -64,22 +78,29 @@ html {
   --success: #22c55e;
   --warning: #fbbf24;
   --danger: #ef4444;
+
+  /* shadows */
+
+  --shadow:
+    0 1px 2px rgba(0,0,0,.4),
+    0 10px 40px rgba(0,0,0,.4);
 }
+
+/* ================================================= */
+/* TAILWIND THEME TOKENS */
+/* ================================================= */
 
 @theme inline {
 
-  /* default */
+  /* backgrounds */
 
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
-  /* surfaces */
-
   --color-card: var(--card);
   --color-secondary-bg: var(--secondary-bg);
 
   /* text */
 
+  --color-foreground: var(--foreground);
   --color-foreground-secondary: var(--foreground-secondary);
 
   /* borders */
@@ -103,24 +124,40 @@ html {
   --font-mono: var(--font-geist-mono);
 }
 
-/* disable browser automatic dark theme */
+/* disable browser dark theme */
 
-@media(prefers-color-scheme:dark) {
+@media (prefers-color-scheme: dark) {
   :root {}
 }
+
+/* ================================================= */
+/* GLOBALS */
+/* ================================================= */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
   margin: 0;
   padding: 0;
+
   transition:
     background-color .2s ease,
     color .2s ease;
 }
 
-/* utility classes */
+/* ================================================= */
+/* BACKGROUNDS */
+/* ================================================= */
+
+.bg-background {
+  background-color: var(--background);
+}
 
 .bg-card {
   background-color: var(--card);
@@ -130,12 +167,8 @@ body {
   background-color: var(--secondary-bg);
 }
 
-.border-default {
-  border-color: var(--border);
-}
-
-.text-secondary {
-  color: var(--foreground-secondary);
+.bg-foreground {
+  background-color: var(--foreground);
 }
 
 .bg-primary {
@@ -144,6 +177,22 @@ body {
 
 .bg-primary:hover {
   background-color: var(--primary-hover);
+}
+
+/* ================================================= */
+/* TEXT */
+/* ================================================= */
+
+.text-background {
+  color: var(--background);
+}
+
+.text-foreground {
+  color: var(--foreground);
+}
+
+.text-secondary {
+  color: var(--foreground-secondary);
 }
 
 .text-primary {
@@ -160,4 +209,155 @@ body {
 
 .text-danger {
   color: var(--danger);
+}
+
+/* ================================================= */
+/* BORDERS */
+/* ================================================= */
+
+.border-default {
+  border-color: var(--border);
+}
+
+/* ================================================= */
+/* SHADOWS */
+/* ================================================= */
+
+.shadow-theme {
+  box-shadow: var(--shadow);
+}
+
+/* ================================================= */
+/* CHECKOUT STEPPER */
+/* ================================================= */
+
+.bg-active {
+  background-color: var(--primary);
+  color: white;
+
+  box-shadow:
+    0 0 0 4px rgb(from var(--primary) r g b / 0.15);
+}
+
+.bg-inactive {
+  background-color: var(--secondary-bg);
+  color: var(--foreground-secondary);
+}
+
+.line-active {
+  background-color: var(--primary);
+}
+
+.line-inactive {
+  background-color: var(--secondary-bg);
+}
+
+/* ================================================= */
+/* INPUTS */
+/* ================================================= */
+
+.input-theme {
+  background: var(--card);
+  color: var(--foreground);
+
+  border: 1px solid var(--border);
+
+  transition: all .2s ease;
+}
+
+.input-theme:focus {
+  outline: none;
+
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 4px rgb(from var(--primary) r g b / .15);
+}
+
+/* ================================================= */
+/* BUTTONS */
+/* ================================================= */
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+
+  transition: all .2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--secondary-bg);
+  color: var(--foreground);
+
+  border: 1px solid var(--border);
+}
+
+/* ================================================= */
+/* PRODUCT CARD */
+/* ================================================= */
+
+.product-card {
+
+  background: var(--card);
+
+  border: 1px solid var(--border);
+
+  border-radius: 1rem;
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+}
+
+.product-card:hover {
+
+  transform: translateY(-4px);
+
+  border-color: var(--primary);
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.15);
+}
+
+.dark .product-card:hover {
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.5);
+}
+
+/* ================================================= */
+/* SELECTED PRODUCT */
+/* ================================================= */
+
+.product-selected {
+
+  border: 2px solid var(--primary);
+
+  box-shadow:
+    0 0 0 1px var(--primary),
+    0 10px 30px rgb(from var(--primary) r g b / .2);
+}
+
+/* ================================================= */
+/* NAVBAR */
+/* ================================================= */
+
+.navbar-theme {
+
+  backdrop-filter: blur(20px);
+
+  background:
+    color-mix(
+      in srgb,
+      var(--background) 80%,
+      transparent
+    );
+
+  border-bottom:
+    1px solid var(--border);
 }

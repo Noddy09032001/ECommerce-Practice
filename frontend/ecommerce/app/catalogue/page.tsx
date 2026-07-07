@@ -116,7 +116,9 @@ export default function CataloguePage() {
 
           {/* preview */}
 
-          {selectedProduct && <ProductPreview product={selectedProduct} />}
+          {selectedProduct && <ProductPreview product={selectedProduct} onClose={function (): void {
+            throw new Error("Function not implemented.");
+          } } />}
         </div>
       </div>
     </main>
