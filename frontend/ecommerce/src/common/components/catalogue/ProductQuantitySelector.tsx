@@ -15,7 +15,7 @@ export default function ProductQuantitySelector({
     <div className="flex items-center gap-4">
       <button
         onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-        className="h-10 w-10 rounded-lg border border-default bg-card text-foreground hover:bg-secondary-bg transition-colors"
+        className="h-10 w-10 rounded-lg border border-default bg-card text-foreground hover:bg-secondary-bg transition-colors cursor-pointer"
       >
         -
       </button>
@@ -26,7 +26,7 @@ export default function ProductQuantitySelector({
 
       <button
         onClick={() => quantity < max && setQuantity(quantity + 1)}
-        className="h-10 w-10 rounded-lg border border-default bg-card text-foreground hover:bg-secondary-bg transition-colors"
+        className="h-10 w-10 rounded-lg border border-default bg-card text-foreground hover:bg-secondary-bg transition-colors cursor-pointer"
       >
         +
       </button>

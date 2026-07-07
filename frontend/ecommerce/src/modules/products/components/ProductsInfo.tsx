@@ -3,6 +3,7 @@
 import FilterSidebar from "@/src/common/components/catalogue/FilterSidebar";
 import ProductGrid from "@/src/common/components/catalogue/ProductGrid";
 import ProductPreview from "@/src/common/components/catalogue/ProductPreview";
+import PageHeading from "@/src/common/components/elements/PageHeading";
 import { Product } from "@/src/common/types/products";
 import { useState } from "react";
 
@@ -90,6 +91,10 @@ const products: Product[] = [
   },
 ];
 
+const PAGE_TITLE = 'Our Product Catalogue';
+const PAGE_DESCRIPTION = "Browse our extensive range of high-quality products designed to meet your needs. Discover the latest arrivals, best-selling items, and exclusive collections—all in one place.";
+
+
 const ProductInfo = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
@@ -117,7 +122,7 @@ const ProductInfo = () => {
 
           {/* preview */}
 
-          {selectedProduct && <ProductPreview product={selectedProduct} />}
+          {selectedProduct && <ProductPreview product={selectedProduct} onClose={() => setSelectedProduct(null)}/>}
         </div>
       </div>
     </main>

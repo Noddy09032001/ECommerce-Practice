@@ -5,12 +5,19 @@ interface PageHeadingProps {
 
 const PageHeading = ({ title, description }: PageHeadingProps) => {
   return (
-    <>
-      <h1 className='text-2xl font-medium font-sora'>{title}</h1>
-      <p className='mb-6 border-b border-dashed border-neutral-600 pt-2 pb-6 text-neutral-600 dark:text-neutral-400'>
-        {description}
-      </p>
-    </>
+    <header className="mb-8 border-b border-neutral-200 pb-5 dark:border-neutral-800">
+      <div className="space-y-2">
+        <h1 className="font-sora text-[28px] font-semibold tracking-[-0.02em] text-neutral-950 dark:text-white">
+          {title}
+        </h1>
+
+        {description && (
+          <p className="max-w-3xl text-[15px] leading-6 text-neutral-500 dark:text-neutral-400">
+            {description}
+          </p>
+        )}
+      </div>
+    </header>
   );
 };
 
