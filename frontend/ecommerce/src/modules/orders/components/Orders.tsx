@@ -50,7 +50,7 @@ export default function Orders() {
       <OrdersPagination currentPage={currentPage} totalPages={5} onPageChange={setCurrentPage}/>
 
       {selectedOrder && (
-        <OrderDrawer order={selectedOrder} onClose={() => setSelectedOrder(null)}/>
+        <OrderDrawer order={selectedOrder} onClose={() => setSelectedOrder(null)} open={selectedOrder !== null}/>
       )}
     </main>
   );
