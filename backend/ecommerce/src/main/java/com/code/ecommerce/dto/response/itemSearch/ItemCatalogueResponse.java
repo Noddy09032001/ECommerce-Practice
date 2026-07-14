@@ -14,6 +14,19 @@ public class ItemCatalogueResponse {
 
     public ItemCatalogueResponse(){}
 
+    public ItemCatalogueResponse(Long itemPk, String itemId, String itemName, String category, Long sellerPk, String sellerId,
+                                 String sellerName, Double price, Integer quantity) {
+        this.itemPk = itemPk;
+        this.itemId = itemId;
+        this.itemName = itemName;
+        this.category = category;
+        this.sellerPk = sellerPk;
+        this.sellerId = sellerId;
+        this.sellerName = sellerName;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
     public Long getItemPk() {
         return itemPk;
     }
