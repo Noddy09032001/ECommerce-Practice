@@ -2,6 +2,7 @@ package com.code.ecommerce.service.search;
 
 import com.code.ecommerce.dto.requests.itemSearch.ItemSearchRequest;
 import com.code.ecommerce.dto.requests.orderSearch.OrderSearchRequest;
+import com.code.ecommerce.dto.response.ItemResponse;
 import com.code.ecommerce.dto.response.itemSearch.ItemCatalogueResponse;
 import com.code.ecommerce.dto.response.orderSearch.OrderSearchResponse;
 import com.code.ecommerce.repository.ItemRepository;
@@ -33,7 +34,7 @@ public class SearchServiceImplementation implements SearchService{
      * @return paginated catalogue response for the given search parameters
      */
     @Override
-    public Page<ItemCatalogueResponse> searchItems(ItemSearchRequest request) {
+    public Page<ItemResponse> searchItems(ItemSearchRequest request) {
         logger.info("Inside the search items service method - ");
         return itemRepository.searchItems(request);
     }

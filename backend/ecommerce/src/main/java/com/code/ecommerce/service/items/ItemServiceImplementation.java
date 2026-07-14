@@ -116,7 +116,6 @@ public class ItemServiceImplementation implements ItemService {
         logger.info("Inside the get all items method - ");
         try{
             List<Item> items = itemRepository.findAll();  // getting the list of all the items
-
             List<ItemResponse> responses = new ArrayList<>();  // list to add all the items in the needed response format
             for(Item item : items){
                 ItemResponse response = this.generateResponse(item);  // generating response for the item
@@ -127,7 +126,6 @@ public class ItemServiceImplementation implements ItemService {
             }
 
             return responses;  // returning the list of items in the response format
-
         } catch (Exception e) {
             logger.info("Error getting the list of all items - {}", e.getMessage());
             throw new RuntimeException(e);
