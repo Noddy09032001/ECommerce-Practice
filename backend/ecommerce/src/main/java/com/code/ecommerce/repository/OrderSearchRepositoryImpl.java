@@ -30,12 +30,12 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class OrderSearchRepositoryImplementation implements OrderSearchRepository{
+public class OrderSearchRepositoryImpl implements OrderSearchRepository{
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    private static final Logger logger = LoggerFactory.getLogger(OrderSearchRepositoryImplementation.class);  // getting the logger
+    private static final Logger logger = LoggerFactory.getLogger(OrderSearchRepositoryImpl.class);  // getting the logger
 
     @Override
     public Page<OrderSearchResponse> searchOrder(OrderSearchRequest request) {
