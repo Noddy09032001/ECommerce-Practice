@@ -3,6 +3,7 @@ package com.code.ecommerce.controller;
 import com.code.ecommerce.dto.requests.itemSearch.ItemSearchRequest;
 import com.code.ecommerce.dto.requests.orderSearch.OrderSearchRequest;
 import com.code.ecommerce.dto.response.ApiResponse;
+import com.code.ecommerce.dto.response.ItemResponse;
 import com.code.ecommerce.dto.response.itemSearch.ItemCatalogueResponse;
 import com.code.ecommerce.dto.response.orderSearch.OrderSearchResponse;
 import com.code.ecommerce.service.search.SearchService;
@@ -34,7 +35,7 @@ public class SearchController {
      */
     @PostMapping("/items-search")
     public ResponseEntity<?> searchItems(@RequestBody ItemSearchRequest request){
-        Page<ItemCatalogueResponse> response = searchService.searchItems(request);  // getting the paginated response
+        Page<ItemResponse> response = searchService.searchItems(request);  // getting the paginated response
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setData(response);  // setting the response in the data of the api response body
         apiResponse.setMessage("Data for the search filters for the item found successfully");  // setting the message
