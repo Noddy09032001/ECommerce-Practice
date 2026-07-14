@@ -1,5 +1,6 @@
 package com.code.ecommerce.pojo;
 
+import com.code.ecommerce.pojo.orders.OrderDetails;
 import com.code.ecommerce.pojo.orders.OrderItemDetails;
 import jakarta.persistence.*;
 
@@ -44,6 +45,9 @@ public class Seller implements Serializable {
     // orders associated with the seller
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItemDetails> orderItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderDetails> orderDetails = new ArrayList<>();
 
     public Seller(){}
 
@@ -133,5 +137,13 @@ public class Seller implements Serializable {
 
     public void setOrderItems(List<OrderItemDetails> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public List<OrderDetails> getOrderDetails() {
+        return orderDetails;
+    }
+
+    public void setOrderDetails(List<OrderDetails> orderDetails) {
+        this.orderDetails = orderDetails;
     }
 }

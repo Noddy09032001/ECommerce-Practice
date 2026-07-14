@@ -21,7 +21,7 @@ public class SellerItemMapping implements Serializable {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;  // id of the item associated
 
-    @Column(name = "amount", precision = 15, scale = 2)
+    @Column(name = "amount")
     private Double amount;   // the unit cost of the item before tax
 
     @Column(name = "other_charges")
@@ -30,7 +30,7 @@ public class SellerItemMapping implements Serializable {
     @Column(name = "transportation_charges")
     private Float transportationCharges;  // transportation charges specified by the merchant
 
-    @Column(name = "total_cost", precision = 15, scale = 2)
+    @Column(name = "total_cost")
     private Double totalCost;  // the total amount after all the taxes added up
 
     @Column(name = "available_quantity")

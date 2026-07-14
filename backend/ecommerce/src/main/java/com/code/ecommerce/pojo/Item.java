@@ -36,7 +36,7 @@ public class Item implements Serializable {
     @Column(name = "created_by")
     private String createdBy;  // data for the item creator
 
-    @Column(name = "modified_on")
+    @Column(name = "modified_by")
     private String modifiedBy;  // storing the data for item modifier
 
     private Float cgst;

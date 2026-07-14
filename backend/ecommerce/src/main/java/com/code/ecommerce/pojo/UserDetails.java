@@ -2,6 +2,7 @@ package com.code.ecommerce.pojo;
 
 import com.code.ecommerce.common.constants.GenderConstants;
 import com.code.ecommerce.common.constants.RoleConstants;
+import com.code.ecommerce.pojo.orders.Order;
 import com.code.ecommerce.pojo.orders.OrderDetails;
 import jakarta.persistence.*;
 
@@ -31,6 +32,8 @@ public class UserDetails {
     private String city;
     private String state;
     private String country;
+
+    @Column(name = "pin_code")
     private String pinCode;
 
     @Column(columnDefinition = "TEXT")
@@ -43,7 +46,7 @@ public class UserDetails {
     private RoleConstants role;  // role of the user
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<OrderDetails> orders = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>();
 
     public UserDetails(){}
 
@@ -80,7 +83,7 @@ public class UserDetails {
 
     public UserDetails(Long id, String name, String password, String phoneNumber, String email, String city,
                        String country, String state, String pinCode, String address, GenderConstants gender,
-                       RoleConstants role, List<OrderDetails> orders) {
+                       RoleConstants role, List<Order> orders) {
         this.id = id;
         this.name = name;
         this.password = password;
@@ -192,11 +195,11 @@ public class UserDetails {
         this.role = role;
     }
 
-    public List<OrderDetails> getOrders() {
+    public List<Order> getOrders() {
         return orders;
     }
 
-    public void setOrders(List<OrderDetails> orders) {
+    public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
 }

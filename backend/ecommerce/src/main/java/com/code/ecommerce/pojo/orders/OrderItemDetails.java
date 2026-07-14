@@ -1,6 +1,7 @@
 package com.code.ecommerce.pojo.orders;
 
 import com.code.ecommerce.pojo.Item;
+import com.code.ecommerce.pojo.Seller;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,10 @@ public class OrderItemDetails {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id", nullable = false)
+    private Seller seller;
 
     @Column(name = "amount_without_tax")
     private Double amountWithoutTax;  // the amount of one item
@@ -53,12 +58,13 @@ public class OrderItemDetails {
 
     public OrderItemDetails(){}
 
-    public OrderItemDetails(Long id, Order order, Item item, Double amountWithoutTax, Double cgstAmount, Double sgstAmount,
+    public OrderItemDetails(Long id, Order order, Item item, Seller seller, Double amountWithoutTax, Double cgstAmount, Double sgstAmount,
                             Double igstAmount, Double cessAmount, Double vatAmount, Double quantity, LocalDateTime createdOn,
                             Double totalAmount, LocalDateTime modifiedOn) {
         this.id = id;
         this.order = order;
         this.item = item;
+        this.seller = seller;
         this.amountWithoutTax = amountWithoutTax;
         this.cgstAmount = cgstAmount;
         this.sgstAmount = sgstAmount;
@@ -93,6 +99,14 @@ public class OrderItemDetails {
 
     public void setItem(Item item) {
         this.item = item;
+    }
+
+    public Seller getSeller() {
+        return seller;
+    }
+
+    public void setSeller(Seller seller) {
+        this.seller = seller;
     }
 
     public Double getAmountWithoutTax() {
