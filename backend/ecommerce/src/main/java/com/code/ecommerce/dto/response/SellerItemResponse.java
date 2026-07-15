@@ -2,6 +2,7 @@ package com.code.ecommerce.dto.response;
 
 public class SellerItemResponse {
 
+    private Long id;  // the id of the merchant
     private String name;   // name of the merchant
     private Double amount;  // the amount before taxes
     private Double finalAmount;  // the amount after taxes
@@ -11,14 +12,23 @@ public class SellerItemResponse {
 
     public SellerItemResponse(){}
 
-    public SellerItemResponse(String name, Double amount, Double finalAmount, Float otherCharges,
+    public SellerItemResponse(Long id, String name, Double amount, Double finalAmount, Float otherCharges,
                               Float transportationCharges, Integer quantity) {
+        this.id = id;
         this.name = name;
         this.amount = amount;
         this.finalAmount = finalAmount;
         this.otherCharges = otherCharges;
         this.transportationCharges = transportationCharges;
         this.quantity = quantity;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
