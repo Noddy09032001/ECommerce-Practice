@@ -75,7 +75,7 @@ const Checkout = () => {
             onClick={() => router.push("/checkout/confirm")}
             className="px-8 py-3 bg-foreground text-background rounded-xl font-semibold transition-all hover:opacity-90 cursor-pointer"
           >
-            Place Order
+            Proceed To Payment
           </button>
         </div>
       </div>

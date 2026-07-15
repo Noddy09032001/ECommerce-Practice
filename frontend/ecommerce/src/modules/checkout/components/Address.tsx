@@ -1,7 +1,16 @@
 "use client";
 import CheckoutLayout from "@/src/common/components/checkout/CheckoutLayout";
+import { CartItem } from "@/src/common/types/cart";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+
+// defining the interface for the items request body
+interface ItemRequest{
+  itemId: number,
+  quantity: number,
+  sellerId: number
+}
 
 const Address = () => {
   const router = useRouter();
@@ -13,6 +22,40 @@ const Address = () => {
     country: "",
     pinCode: "",
   });
+
+  const [items, setItems] = useState<CartItem[]>([]);
+  useEffect(() => {
+    const cart = localStorage.getItem("cart");  // getting the items from the local storage
+    if (cart) {
+      setItems(JSON.parse(cart));  // parsing into json object
+    }
+  }, []);
+
+
+  // getting the details of the current user (using static data for now)
+  const user = {
+    "email": "",
+    "phoneNumber": 7428378901
+  }
+
+  // function for creating the order 
+  const createOrder = async () => {
+    // creating a request array of items for creating the order object 
+    const itemRequest: ItemRequest[] = items.map((item: CartItem) => ({
+      itemId: item.itemId,   // setting the item id
+      quantity: item.quantity,   // setting the quantity
+      sellerId: item.sellerId,  // setting the id of the merchant associated with the item 
+    }));
+
+
+    const reqBody = {
+      "orderDate": new Date().toISOString(),   // getting the current date
+      "items": itemRequest,  // getting the request items
+      "paymentMode": "CARD",  // default payment method
+      "address": address,   // setting the address details
+      "user": user,   // setting the user details
+    }
+  }
 
   return (
     <CheckoutLayout currentStep="address">
@@ -94,7 +137,7 @@ const Address = () => {
             onClick={() => router.push("/checkout/payment")}
             className="px-8 py-3 bg-primary text-primary-foreground rounded-xl font-semibold transition cursor-pointer hover:opacity-90"
           >
-            Continue
+            Place Order
           </button>
         </div>
       </div>
