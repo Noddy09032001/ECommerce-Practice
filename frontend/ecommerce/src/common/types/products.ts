@@ -31,15 +31,15 @@ export interface Product {
     images: ProductImage[]
 } */
 
-
 // Merchant information returned by the backend
 
 export interface Seller {
-    sellerId: string;
-    sellerName: string;
+  sellerId: string;
+  sellerName: string;
 }
 
 export interface SellerItemResponse {
+  id: number;
   name: string;
   amount: number;
   finalAmount: number;
@@ -58,6 +58,7 @@ export interface ProductImage {
 // Product returned by backend
 
 export interface Product {
+  id: number;
   name: string;
   description: string;
   category: string;
