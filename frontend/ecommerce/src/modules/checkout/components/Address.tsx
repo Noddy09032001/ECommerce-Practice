@@ -3,6 +3,7 @@ import CheckoutLayout from "@/src/common/components/checkout/CheckoutLayout";
 import { CartItem } from "@/src/common/types/cart";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { createOrder } from "@/src/common/api/ordersApiService";
 
 
 // defining the interface for the items request body
@@ -16,6 +17,15 @@ const Address = () => {
   const router = useRouter();
 
   const [address, setAddress] = useState({
+    street: "",
+    city: "",
+    state: "",
+    country: "",
+    pinCode: "",
+  });
+
+  // validation for the errors in the fields of the address form
+  const [errors, setErrors] = useState({
     street: "",
     city: "",
     state: "",
@@ -38,24 +48,85 @@ const Address = () => {
     "phoneNumber": 7428378901
   }
 
-  // function for creating the order 
-  const createOrder = async () => {
-    // creating a request array of items for creating the order object 
+  const validateForm = () => {
+    const newErrors = {
+      street: "",
+      city: "",
+      state: "",
+      country: "",
+      pinCode: "",
+    };
+
+    let isValid = true;
+
+    if (!address.street.trim()) {
+      newErrors.street = "Street address is required";
+      isValid = false;
+    }
+
+    if (!address.city.trim()) {
+      newErrors.city = "City is required";
+      isValid = false;
+    }
+
+    if (!address.state.trim()) {
+      newErrors.state = "State is required";
+      isValid = false;
+    }
+
+    if (!address.country.trim()) {
+      newErrors.country = "Country is required";
+      isValid = false;
+    }
+
+    if (!address.pinCode.trim()) {
+      newErrors.pinCode = "Pin code is required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);   // setting the error values 
+
+    return isValid;
+  };
+
+  // function for creating the order
+  const generateOrder = async () => {
+  
+    if(!validateForm())  // validations fields
+      return;
+
+    // creating a request array of items for creating the order object
     const itemRequest: ItemRequest[] = items.map((item: CartItem) => ({
-      itemId: item.itemId,   // setting the item id
-      quantity: item.quantity,   // setting the quantity
-      sellerId: item.sellerId,  // setting the id of the merchant associated with the item 
+      itemId: item.itemId, // setting the item id
+      quantity: item.quantity, // setting the quantity
+      sellerId: item.sellerId, // setting the id of the merchant associated with the item
     }));
 
-
     const reqBody = {
-      "orderDate": new Date().toISOString(),   // getting the current date
-      "items": itemRequest,  // getting the request items
-      "paymentMode": "CARD",  // default payment method
-      "address": address,   // setting the address details
-      "user": user,   // setting the user details
-    }
-  }
+      orderDate: new Date().toISOString(), // getting the current date
+      items: itemRequest, // getting the request items
+      paymentMode: "CARD", // default payment method
+      address: address, // setting the address details
+      user: user, // setting the user details
+    };
+
+    console.log("The request body: ", reqBody);
+
+    /*try {
+      const response = await createOrder(reqBody) // calling the orders api
+
+      // setting the response in the session storage 
+      sessionStorage.setItem(
+        "currentOrder",
+        JSON.stringify(response.data)
+      );
+
+      router.push("/checkout/payment");  // routing to the payment page after the response 
+
+    } catch (error) {
+      console.log(error)
+    }*/
+  };
 
   return (
     <CheckoutLayout currentStep="address">
@@ -69,72 +140,130 @@ const Address = () => {
         <div className="mt-8 space-y-5">
           <input
             value={address.street}
-            onChange={(e) =>
+            onChange={(e) => {
               setAddress({
                 ...address,
                 street: e.target.value,
-              })
-            }
+              });
+
+              setErrors({
+                ...errors,
+                street: "",
+              });
+            }}
             placeholder="Street Address"
-            className="w-full p-4 rounded-xl bg-card border border-default text-foreground outline-none transition-colors"
+            className={`w-full p-4 rounded-xl bg-card border outline-none transition-colors ${
+              errors.street ? "border-red-500" : "border-default"
+            }`}
           />
+          {errors.street && (
+            <p className="mt-1 text-sm text-red-500">{errors.street}</p>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <input
               value={address.city}
-              onChange={(e) =>
+              onChange={(e) => {
                 setAddress({
                   ...address,
                   city: e.target.value,
-                })
-              }
+                });
+
+                setErrors({
+                  ...errors,
+                  city: "",
+                });
+              }}
               placeholder="City"
-              className="p-4 rounded-xl bg-card border border-default text-foreground outline-none transition-colors"
+              className={`p-4 rounded-xl bg-card outline-none transition-colors ${
+                errors.city ? "border border-red-500" : "border border-default"
+              }`}
             />
+
+            {errors.city && (
+              <p className="mt-1 text-sm text-red-500">{errors.city}</p>
+            )}
 
             <input
               value={address.state}
-              onChange={(e) =>
+              onChange={(e) => {
                 setAddress({
                   ...address,
                   state: e.target.value,
-                })
-              }
+                });
+
+                setErrors({
+                  ...errors,
+                  state: "",
+                });
+              }}
               placeholder="State"
-              className="p-4 rounded-xl bg-card border border-default text-foreground outline-none transition-colors"
+              className={`p-4 rounded-xl bg-card outline-none transition-colors ${
+                errors.state ? "border border-red-500" : "border border-default"
+              }`}
             />
+
+            {errors.state && (
+              <p className="mt-1 text-sm text-red-500">{errors.state}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <input
               value={address.country}
-              onChange={(e) =>
+              onChange={(e) => {
                 setAddress({
                   ...address,
                   country: e.target.value,
-                })
-              }
+                });
+
+                setErrors({
+                  ...errors,
+                  country: "",
+                });
+              }}
               placeholder="Country"
-              className="p-4 rounded-xl bg-card border border-default text-foreground outline-none transition-colors"
+              className={`p-4 rounded-xl bg-card outline-none transition-colors ${
+                errors.country
+                  ? "border border-red-500"
+                  : "border border-default"
+              }`}
             />
+
+            {errors.country && (
+              <p className="mt-1 text-sm text-red-500">{errors.country}</p>
+            )}
 
             <input
               value={address.pinCode}
-              onChange={(e) =>
+              onChange={(e) => {
                 setAddress({
                   ...address,
                   pinCode: e.target.value,
-                })
-              }
+                });
+
+                setErrors({
+                  ...errors,
+                  pinCode: "",
+                });
+              }}
               placeholder="Pin Code"
-              className="p-4 rounded-xl bg-card border border-default text-foreground outline-none transition-colors"
+              className={`p-4 rounded-xl bg-card outline-none transition-colors ${
+                errors.pinCode
+                  ? "border border-red-500"
+                  : "border border-default"
+              }`}
             />
+
+            {errors.pinCode && (
+              <p className="mt-1 text-sm text-red-500">{errors.pinCode}</p>
+            )}
           </div>
         </div>
 
         <div className="mt-10 flex justify-end">
           <button
-            onClick={() => router.push("/checkout/payment")}
+            onClick={generateOrder}
             className="px-8 py-3 bg-primary text-primary-foreground rounded-xl font-semibold transition cursor-pointer hover:opacity-90"
           >
             Place Order
