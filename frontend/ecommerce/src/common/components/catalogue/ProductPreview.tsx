@@ -154,13 +154,15 @@ interface Props {
 export default function ProductPreview({ product, onClose }: Props) {
   const { addItem } = useCart();
 
-  const cheapest = [...product.sellers].sort(
-    (a, b) => a.totalCost - b.totalCost,
+  const cheapest = [...product.merchants].sort(
+    (a, b) => a.finalAmount - b.finalAmount,
   )[0];
 
   const [selectedSeller, setSelectedSeller] = useState(cheapest);
 
   const [quantity, setQuantity] = useState(1);
+
+  console.log("Product: ", product)
 
   return (
     <div className="sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto bg-card border border-default rounded-2xl p-6 transition-colors">
@@ -181,16 +183,16 @@ export default function ProductPreview({ product, onClose }: Props) {
 
       {/* gallery */}
 
-      <ProductImageGallery images={product.images} />
+      <ProductImageGallery images={product.images? product.images : []} />
 
       {/* title */}
 
       <div className="mt-8">
         <h1 className="text-3xl font-bold text-foreground">
-          {product.itemName}
+          {product.name}
         </h1>
 
-        <p className="mt-3 text-secondary">{product.itemDescription}</p>
+        <p className="mt-3 text-secondary">{product.description}</p>
 
         <p className="mt-3 text-sm text-secondary">SKU : {product.sku}</p>
       </div>
@@ -203,12 +205,12 @@ export default function ProductPreview({ product, onClose }: Props) {
         <select
           className="mt-3 w-full p-4 rounded-xl border border-default bg-card text-foreground outline-none transition-colors"
           onChange={(e) =>
-            setSelectedSeller(product.sellers[Number(e.target.value)])
+            setSelectedSeller(product.merchants[Number(e.target.value)])
           }
         >
-          {product.sellers.map((seller, index) => (
+          {product.merchants.map((seller, index) => (
             <option key={index} value={index}>
-              {seller.seller.sellerName}
+              {seller.name}
             </option>
           ))}
         </select>
@@ -236,7 +238,7 @@ export default function ProductPreview({ product, onClose }: Props) {
 
         <div className="flex justify-between text-2xl font-bold text-foreground">
           <span>Total</span>
-          <span>₹{selectedSeller.totalCost}</span>
+          <span>₹{selectedSeller.finalAmount}</span>
         </div>
       </div>
 
@@ -244,7 +246,7 @@ export default function ProductPreview({ product, onClose }: Props) {
 
       <div className="mt-8">
         <p className="text-success">
-          Available : {selectedSeller.availableQuantity}
+          Available : {selectedSeller.quantity}
         </p>
       </div>
 
@@ -257,7 +259,7 @@ export default function ProductPreview({ product, onClose }: Props) {
           <ProductQuantitySelector
             quantity={quantity}
             setQuantity={setQuantity}
-            max={selectedSeller.availableQuantity}
+            max={selectedSeller.quantity}
           />
         </div>
       </div>
@@ -267,15 +269,15 @@ export default function ProductPreview({ product, onClose }: Props) {
       <button
         onClick={() =>
           addItem({
-            itemId: product.itemId,
-            itemName: product.itemName,
-            sellerId: selectedSeller.seller.sellerId,
-            sellerName: selectedSeller.seller.sellerName,
+            itemId: product.id,
+            itemName: product.name,
+            sellerId: selectedSeller.id,
+            sellerName: selectedSeller.name,
             quantity,
             amount: selectedSeller.amount,
             transportationCharges: selectedSeller.transportationCharges,
             otherCharges: selectedSeller.otherCharges,
-            totalCost: selectedSeller.totalCost,
+            totalCost: selectedSeller.finalAmount,
           })
         }
         className="mt-10 w-full py-4 rounded-xl bg-primary text-white font-semibold transition-colors hover:opacity-90 cursor-pointer"
