@@ -1,4 +1,4 @@
-"use client";
+/*"use client";
 
 import { useState } from "react";
 
@@ -10,13 +10,10 @@ export default function FilterSidebar() {
 
   return (
     <aside className="sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto bg-card border border-default rounded-2xl p-6 transition-colors">
-      {/* title */}
 
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Filters</h2>
       </div>
-
-      {/* category */}
 
       <div className="mt-8">
         <h3 className="font-semibold text-lg">Category</h3>
@@ -47,8 +44,6 @@ export default function FilterSidebar() {
           </label>
         </div>
       </div>
-
-      {/* price */}
 
       <div className="mt-10">
         <h3 className="font-semibold text-lg">Price Range</h3>
@@ -96,7 +91,7 @@ export default function FilterSidebar() {
         </div>
       </div>
 
-      {/* sellers */}
+      
 
       <div className="mt-10">
         <h3 className="font-semibold text-lg">Seller</h3>
@@ -128,7 +123,7 @@ export default function FilterSidebar() {
         </div>
       </div>
 
-      {/* availability */}
+      
 
       <div className="mt-10">
         <h3 className="font-semibold text-lg">Availability</h3>
@@ -142,7 +137,7 @@ export default function FilterSidebar() {
         </div>
       </div>
 
-      {/* sorting */}
+      
 
       <div className="mt-10">
         <h3 className="font-semibold text-lg">Sort By</h3>
@@ -177,6 +172,225 @@ export default function FilterSidebar() {
             <span>Popularity</span>
           </label>
         </div>
+      </div>
+    </aside>
+  );
+}*/
+
+"use client";
+
+import { ItemSearchRequest } from "@/src/common/types/search";
+
+interface Props {
+  filters: ItemSearchRequest;
+  onChange: (filters: ItemSearchRequest) => void;
+}
+
+/**
+ * Static values for now.
+ * Later these can be fetched from the backend.
+ */
+const categories = ["Mobile Phones", "Laptops", "Tablets", "Audio"];
+
+const sellers = [
+  {
+    id: "SELLER-1",
+    name: "Vijay Sales",
+  },
+  {
+    id: "SELLER-2",
+    name: "iVenus",
+  },
+  {
+    id: "SELLER-3",
+    name: "Reliance Digital",
+  },
+  {
+    id: "SELLER-4",
+    name: "Croma",
+  },
+];
+
+export default function FilterSidebar({ filters, onChange }: Props) {
+  /**
+   * Category selection
+   */
+  const handleCategory = (category: string, checked: boolean) => {
+    if (checked) {
+      onChange({
+        ...filters,
+        categories: [...filters.categories, category],
+      });
+    } else {
+      onChange({
+        ...filters,
+        categories: filters.categories.filter((c) => c !== category),
+      });
+    }
+  };
+
+  /**
+   * Seller selection
+   */
+  const handleSeller = (sellerId: string, checked: boolean) => {
+    if (checked) {
+      onChange({
+        ...filters,
+        sellerIds: [...filters.sellerIds, sellerId],
+      });
+    } else {
+      onChange({
+        ...filters,
+        sellerIds: filters.sellerIds.filter((id) => id !== sellerId),
+      });
+    }
+  };
+
+  return (
+    <aside className="sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto bg-card border border-default rounded-2xl p-6 transition-colors">
+      {/* Header */}
+
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Filters</h2>
+
+        <button
+          className="text-sm text-primary hover:underline"
+          onClick={() =>
+            onChange({
+              categories: [],
+              sellerIds: [],
+              minPrice: undefined,
+              maxPrice: undefined,
+              searchText: "",
+              sortBy: "NAME",
+              page: 0,
+              size: filters.size,
+            })
+          }
+        >
+          Clear
+        </button>
+      </div>
+
+      {/* Search */}
+
+      <div className="mt-8">
+        <h3 className="font-semibold text-lg">Search</h3>
+
+        <input
+          value={filters.searchText}
+          placeholder="Search products..."
+          className="mt-4 w-full p-3 rounded-xl border border-default bg-secondary-bg outline-none"
+          onChange={(e) =>
+            onChange({
+              ...filters,
+              searchText: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Categories */}
+
+      <div className="mt-10">
+        <h3 className="font-semibold text-lg">Category</h3>
+
+        <div className="mt-4 space-y-3">
+          {categories.map((category) => (
+            <label
+              key={category}
+              className="flex items-center gap-3 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={filters.categories.includes(category)}
+                className="accent-primary"
+                onChange={(e) => handleCategory(category, e.target.checked)}
+              />
+
+              <span>{category}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Price */}
+
+      <div className="mt-10">
+        <h3 className="font-semibold text-lg">Price Range</h3>
+
+        <div className="mt-5 flex gap-3">
+          <input
+            type="number"
+            placeholder="Min"
+            value={filters.minPrice ?? ""}
+            className="w-full p-3 rounded-xl border border-default bg-secondary-bg outline-none"
+            onChange={(e) =>
+              onChange({
+                ...filters,
+                minPrice: e.target.value ? Number(e.target.value) : undefined,
+              })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Max"
+            value={filters.maxPrice ?? ""}
+            className="w-full p-3 rounded-xl border border-default bg-secondary-bg outline-none"
+            onChange={(e) =>
+              onChange({
+                ...filters,
+                maxPrice: e.target.value ? Number(e.target.value) : undefined,
+              })
+            }
+          />
+        </div>
+      </div>
+
+      {/* Sellers */}
+
+      <div className="mt-10">
+        <h3 className="font-semibold text-lg">Sellers</h3>
+
+        <div className="mt-4 space-y-3">
+          {sellers.map((seller) => (
+            <label
+              key={seller.id}
+              className="flex items-center gap-3 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={filters.sellerIds.includes(seller.id)}
+                className="accent-primary"
+                onChange={(e) => handleSeller(seller.id, e.target.checked)}
+              />
+
+              <span>{seller.name}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Sorting */}
+
+      <div className="mt-10">
+        <h3 className="font-semibold text-lg">Sort By</h3>
+
+        <select
+          value={filters.sortBy}
+          className="mt-4 w-full rounded-xl border border-default bg-secondary-bg p-3 outline-none"
+          onChange={(e) =>
+            onChange({
+              ...filters,
+              sortBy: e.target.value as "NAME" | "PRICE_ASC" | "PRICE_DESC",
+            })
+          }
+        >
+          <option value="NAME">Product Name</option>
+          <option value="PRICE_ASC">Price : Low → High</option>
+          <option value="PRICE_DESC">Price : High → Low</option>
+        </select>
       </div>
     </aside>
   );
