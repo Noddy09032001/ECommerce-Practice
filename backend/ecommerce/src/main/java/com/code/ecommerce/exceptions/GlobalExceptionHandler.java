@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
      * @param itemSearchException the custom exception containing invalid item search error message
      * @return ResponseEntity containing a standardized ApiResponse with an appropriate HTTP error status
      */
-    @ExceptionHandler(InvalidSellerItemException.class)
+    @ExceptionHandler(ItemSearchException.class)
     public ResponseEntity<ApiResponse> handleItemSearchException(ItemSearchException itemSearchException){
         ApiResponse response = new ApiResponse();
         response.setData(null);
@@ -112,7 +112,7 @@ public class GlobalExceptionHandler {
      * @param orderSearchException the custom exception containing invalid order search error message
      * @return ResponseEntity containing a standardized ApiResponse with an appropriate HTTP error status
      */
-    @ExceptionHandler(InvalidSellerItemException.class)
+    @ExceptionHandler(OrderSearchException.class)
     public ResponseEntity<ApiResponse> handleOrderSearchException(OrderSearchException orderSearchException){
         ApiResponse response = new ApiResponse();
         response.setData(null);
