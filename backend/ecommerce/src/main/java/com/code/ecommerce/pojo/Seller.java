@@ -46,10 +46,22 @@ public class Seller implements Serializable {
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItemDetails> orderItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderDetails> orderDetails = new ArrayList<>();
-
     public Seller(){}
+
+    public Seller(Long id, String sellerId, String sellerName, String email, String phone, String address, Boolean active, LocalDateTime createdOn,
+                  LocalDateTime modifiedOn, List<OrderItemDetails> orderItems, List<SellerItemMapping> items) {
+        this.id = id;
+        this.sellerId = sellerId;
+        this.sellerName = sellerName;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.active = active;
+        this.createdOn = createdOn;
+        this.modifiedOn = modifiedOn;
+        this.orderItems = orderItems;
+        this.items = items;
+    }
 
     public Long getId() {
         return id;
@@ -137,13 +149,5 @@ public class Seller implements Serializable {
 
     public void setOrderItems(List<OrderItemDetails> orderItems) {
         this.orderItems = orderItems;
-    }
-
-    public List<OrderDetails> getOrderDetails() {
-        return orderDetails;
-    }
-
-    public void setOrderDetails(List<OrderDetails> orderDetails) {
-        this.orderDetails = orderDetails;
     }
 }

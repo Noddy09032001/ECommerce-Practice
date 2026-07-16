@@ -175,4 +175,22 @@ public class Order {
     public void setOrderStatuses(List<OrderStatusHistory> orderStatuses) {
         this.orderStatuses = orderStatuses;
     }
+
+    /**
+     * Add an item to the order items list for the existing order
+     * @param item the details of the item to be added for the order
+     */
+    public void addOrderItem(OrderItemDetails item) {
+        orderItems.add(item);  // adding the item to the list
+        item.setOrder(this);  // setting the order id for the item
+    }
+
+    /**
+     * Remove an item from the items list for the existing order
+     * @param item the details of the item to be removed for the order
+     */
+    public void removeOrderItem(OrderItemDetails item) {
+        orderItems.remove(item);   // removing the item from the list
+        item.setOrder(null);  // deleting the order id for the item
+    }
 }

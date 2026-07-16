@@ -21,10 +21,6 @@ public class OrderDetails {
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id", nullable = false)
-    private Seller seller;  // seller selling the item
-
     private Double amount;   // the amount before the taxes
 
     @Column(name = "tax_amount")
@@ -49,12 +45,11 @@ public class OrderDetails {
 
     public OrderDetails(){}
 
-    public OrderDetails(Long id, String orderDetailsId, Order order, Seller seller, Double amount, Double totalTaxInAmount, PaymentMethods paymentMode,
+    public OrderDetails(Long id, String orderDetailsId, Order order, Double amount, Double totalTaxInAmount, PaymentMethods paymentMode,
                         Double totalOrderAmount, LocalDateTime createdOn, LocalDateTime modifiedOn, String city, String state, String address) {
         this.id = id;
         this.orderDetailsId = orderDetailsId;
         this.order = order;
-        this.seller = seller;
         this.amount = amount;
         this.totalTaxInAmount = totalTaxInAmount;
         this.paymentMode = paymentMode;
@@ -160,13 +155,5 @@ public class OrderDetails {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public Seller getSeller() {
-        return seller;
-    }
-
-    public void setSeller(Seller seller) {
-        this.seller = seller;
     }
 }
