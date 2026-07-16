@@ -3,6 +3,8 @@ package com.code.ecommerce.service.orders;
 import com.code.ecommerce.common.constants.OrderStatus;
 import com.code.ecommerce.dto.requests.orders.OrderItemRequest;
 import com.code.ecommerce.dto.requests.orders.OrderRequest;
+import com.code.ecommerce.dto.response.orders.OrderItemPayResponse;
+import com.code.ecommerce.dto.response.orders.OrderResponse;
 import com.code.ecommerce.exceptions.InvalidItemException;
 import com.code.ecommerce.exceptions.InvalidSellerItemException;
 import com.code.ecommerce.pojo.Item;
@@ -64,33 +66,28 @@ public class OrderServiceImplementation implements OrderService {
     }
 
     @Override
-    public void createOrder(OrderRequest request) throws Exception {
+    public OrderResponse createOrder(OrderRequest request) throws Exception {
         logger.info("Inside the create order method - ");
         try{
             String orderId = generateOrderId();  // getting the order id
             String orderDetailsId = this.generateOrderDetailsId();  // generating the order details id
 
             Order order = generateOrder(orderId);  // getting the order object
-            OrderDetails orderDetails = this.generateOrderDetails(orderDetailsId);  // getting the order details object
-
             order.setTotalItems(request.getItems().size());  // setting the total items in the order
-            order.setCurrentStatus(OrderStatus.ORDER_CREATED.toString());  // setting the current status of the order created
 
             UserDetails userDetails = this.generateUserDetailsForOrder(request.getUser().getEmail(), request.getUser().getPhoneNumber());
             order.setUser(userDetails);  // setting the current user for the order
 
             Order currentOrder = orderRepository.save(order);  // saving and returning the current order id
-            orderDetails.setOrder(currentOrder);  // saving the current order inside the order details
+            logger.info("The order has been saved successfully");
 
-            // saving the shipping address of the order
-            orderDetails.setCity(request.getAddress().getCity());
-            orderDetails.setState(request.getAddress().getState());
-            orderDetails.setAddress(request.getAddress().getStreet());
+            // Setting and generating the order details object
+            OrderDetails orderDetails = this.generateOrderDetails(orderDetailsId, request);  // getting the order details object
+            orderDetails.setOrder(currentOrder);  // saving the current order inside the order details
 
             // setting and generating the order items
             List<OrderItemDetails> items = this.generateOrderItems(request.getItems(), currentOrder);
             Double grandOrderTotal = this.getOrderGrandTotal(items);  // getting the grand total of the order
-
 
             Map<String, Double> amounts = this.getOrderDetailsAmounts(items);  // getting the map of the amounts
             orderDetails.setTotalTaxInAmount(amounts.get("tax_amount"));
@@ -98,14 +95,19 @@ public class OrderServiceImplementation implements OrderService {
             orderDetails.setAmount(amounts.get("amount_without_tax"));
             orderDetailsRepository.save(orderDetails);  // saving the order details data object
 
-            currentOrder.setOrderItems(items);  // setting the order items for the current order
+            //currentOrder.setOrderItems(items);  // setting the order items for the current order
+            currentOrder.getOrderItems().clear();
+
+            for (OrderItemDetails item : items) {
+                order.addOrderItem(item);   // setting the order items for the current order
+            }
             currentOrder.setGrandTotal(grandOrderTotal);  // setting the total amount of the current order
 
             orderItemDetailsRepository.saveAll(items);  // saving the list of items in the current order
-
             orderRepository.save(currentOrder);  // saving the updated order model
 
             OrderStatusHistory orderStatus = this.createOrderStatusHistory(currentOrder);  // getting the current status of the order
+            return this.generateOrderResponse(currentOrder, items); // returning the response being generated for the order
 
         } catch (Exception e) {
             logger.info("Error creating order: {}", e.getMessage());
@@ -145,19 +147,26 @@ public class OrderServiceImplementation implements OrderService {
         order.setOrderId(orderId);  // setting the order id being generated
         order.setCreatedOn(LocalDateTime.now());  // setting the created on
         order.setModifiedOn(LocalDateTime.now());  // setting the modified on
+        order.setCurrentStatus(OrderStatus.ORDER_CREATED.toString());  // setting the current status of the order created
         return order;  // return the generated order object
     }
 
     /**
-     * method - save and generate the order item details
+     * method - save and generate the order details for the current order
+     *
      * @param orderDetailsId the unique id of the order details of the order
      * @return the order details object generated
      */
-    public OrderDetails generateOrderDetails(String orderDetailsId){
+    public OrderDetails generateOrderDetails(String orderDetailsId, OrderRequest request){
         OrderDetails orderDetails = new OrderDetails();
         orderDetails.setOrderDetailsId(orderDetailsId);  // setting the order details id
         orderDetails.setCreatedOn(LocalDateTime.now());  // setting the created on date
         orderDetails.setModifiedOn(LocalDateTime.now());  // setting the modified on date
+
+        // saving the shipping address of the order
+        orderDetails.setCity(request.getAddress().getCity());  // setting the city
+        orderDetails.setState(request.getAddress().getState());   // setting the state
+        orderDetails.setAddress(request.getAddress().getStreet());  // setting the address
         return orderDetails;  // returning the order details object
     }
 
@@ -168,6 +177,7 @@ public class OrderServiceImplementation implements OrderService {
      * @return the list of order items fetched from the data
      */
     public List<OrderItemDetails> generateOrderItems(List<OrderItemRequest> items, Order order){
+        logger.info("Inside the generateOrderItems method - ");
         List<OrderItemDetails> details = new ArrayList<>();
         for (OrderItemRequest request : items){
             Item itemDetails = itemRepository.findById(request.getId())
@@ -186,14 +196,15 @@ public class OrderServiceImplementation implements OrderService {
      * @return the order item details data object model
      */
     public OrderItemDetails generateOrderItemDetailsObject(Item details, OrderItemRequest request){
+        logger.info("Inside the generateOrderItemDetailsObject method - ");
         SellerItemMapping mapping = sellerItemMappingRepository.findByItemAndSeller(details.getId(), request.getSellerId());
         if(mapping == null)
             throw new InvalidSellerItemException("Invalid Credentials. Check for merchant id or the item id");
 
         OrderItemDetails response = new OrderItemDetails();
         response.setItem(details);  // setting the item
-        response.setAmountWithoutTax(mapping.getAmount());  // setting the amount
-        response.setTotalAmount(mapping.getTotalCost());  // setting the amount with the tax breakdowns
+        response.setAmountWithoutTax(mapping.getAmount() * request.getQuantity());  // setting the amount
+        response.setTotalAmount(mapping.getTotalCost() * request.getQuantity());  // setting the amount with the tax breakdowns
         response.setQuantity(request.getQuantity());  // setting the requested qty
         response.setCreatedOn(LocalDateTime.now());    // setting the creation date
         response.setModifiedOn(LocalDateTime.now());  // setting the modified date
@@ -204,6 +215,7 @@ public class OrderServiceImplementation implements OrderService {
         response.setIgstAmount(currentAmount * (details.getIgst()) / 100);  // adding the igst amount
         response.setVatAmount(currentAmount * (details.getVat()) / 100);  // adding the vat amount
         response.setCessAmount(currentAmount * (details.getCess()) / 100);  // adding the cess amount
+        response.setSeller(mapping.getSeller());  // setting the seller
 
         return response;  // returning the order item details object
     }
@@ -257,20 +269,62 @@ public class OrderServiceImplementation implements OrderService {
         orderStatusHistory.setOrder(order);  // setting the order object
         orderStatusHistory.setStatus(order.getCurrentStatus());  // setting the status
         orderStatusHistory.setStatusDate(LocalDateTime.now());  // setting the time of the change of the status
-
         orderStatusHistory.setRemarks(String.valueOf(OrderStatus.valueOf(order.getCurrentStatus())));  // setting the remarks
+
         return orderStatusHistory;   // returning the status object
     }
 
     /**
+     * Fetches the user details based on the phone number and the email
      *
-     *
-     * @param email
-     * @param phoneNumber
-     * @return
+     * @param email the current email of the user
+     * @param phoneNumber the phone number of the user
+     * @return the associated user object
      */
     public UserDetails generateUserDetailsForOrder(String email, String phoneNumber){
         return userDetailsService.fetchUserByEmailAndPhoneNumber(email, phoneNumber);
     }
 
+    /**
+     * Generates the order response for the given order
+     * @param order the details of the order
+     * @param items the details of the items in the order
+     * @return the response in the order response format
+     */
+    public OrderResponse generateOrderResponse(Order order, List<OrderItemDetails> items){
+        OrderResponse response = new OrderResponse();
+        response.setOrderId(order.getOrderId());   // setting the order id
+        response.setCurrency("INR");  // setting the currency
+        response.setOrderDate(order.getCreatedOn());   // setting the order creation date
+        response.setGrandTotal(order.getGrandTotal());   // setting the grand total of the order
+        response.setItems(this.generateOrderItemsResponse(items));   // setting the items for the order
+        return response;   // returning the response object
+    }
+
+    /**
+     * Generates the response of the items in the given response format
+     * @param items the details of the items in the order
+     * @return the response in the needed format
+     */
+    public List<OrderItemPayResponse> generateOrderItemsResponse(List<OrderItemDetails> items){
+        List<OrderItemPayResponse> responses = new ArrayList<>();
+        for(OrderItemDetails details : items){
+            OrderItemPayResponse response = new OrderItemPayResponse();
+            response.setItemId(details.getItem().getItemId());   // setting the item id
+            response.setItemName(details.getItem().getItemName());   // setting the item name
+            response.setBaseAmount(details.getAmountWithoutTax());   // setting the base amount
+
+            // calculating the total tax amount for the item
+            Double totalTaxAmount = details.getCgstAmount() + details.getSgstAmount() + details.getIgstAmount() + details.getVatAmount() + details.getCessAmount();
+
+            response.setTaxAmount(totalTaxAmount);   // setting the tax amount
+            response.setTotalAmount(details.getTotalAmount());   // setting the total amount
+            response.setQuantity(details.getQuantity());   // setting the quantity
+            response.setTransportationCharges(0.0);   // setting the transportation charges
+            response.setOtherCharges(0.0);   // setting the other charges
+
+            responses.add(response);  // adding to the list of responses
+        }
+        return responses;  // returning the responses
+    }
 }
