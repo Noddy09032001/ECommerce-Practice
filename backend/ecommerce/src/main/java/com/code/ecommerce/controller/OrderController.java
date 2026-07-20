@@ -33,7 +33,8 @@ public class OrderController {
     @PostMapping("/create-order")
     public ResponseEntity<?> createOrder(@Valid @RequestBody OrderRequest request,
                                          @RequestHeader("idempotency-key") String idempotencyKey) throws Exception {
-        RequestTracker.addOrderKeys(idempotencyKey);  // checking for the order key
+        if(!RequestTracker.addOrderKeys(idempotencyKey)) // checking for the order key
+            throw new RuntimeException("Request with the same identifier key identified. Duplicate request");
         OrderResponse orderResponse = orderService.createOrder(request);  // generating the order
         ApiResponse response = new ApiResponse();
         response.setMessage("Order has been created successfully");
