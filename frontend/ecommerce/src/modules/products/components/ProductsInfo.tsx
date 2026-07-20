@@ -5,7 +5,6 @@ import ProductGrid from "@/src/common/components/catalogue/ProductGrid";
 import ProductPreview from "@/src/common/components/catalogue/ProductPreview";
 import { Product } from "@/src/common/types/products";
 import { useEffect, useState } from "react";
-import { fetchAllItems } from "@/src/common/api/itemsApiService";
 import { ItemSearchRequest } from "@/src/common/types/search";
 import { searchItems } from "@/src/common/api/searchService";
 
