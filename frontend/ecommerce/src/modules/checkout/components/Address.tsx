@@ -8,9 +8,9 @@ import { createOrder } from "@/src/common/api/ordersApiService";
 
 // defining the interface for the items request body
 interface ItemRequest{
-  itemId: number,
-  quantity: number,
-  sellerId: number
+  id: number,   // id of the current item
+  quantity: number,  // the quantity of the item ordered
+  sellerId: number,  // the id of the merchant 
 }
 
 const Address = () => {
@@ -44,8 +44,8 @@ const Address = () => {
 
   // getting the details of the current user (using static data for now)
   const user = {
-    "email": "",
-    "phoneNumber": 7428378901
+    "email": "rahul.sharma@example.com",
+    "phoneNumber": 9876543210
   }
 
   const validateForm = () => {
@@ -97,7 +97,7 @@ const Address = () => {
 
     // creating a request array of items for creating the order object
     const itemRequest: ItemRequest[] = items.map((item: CartItem) => ({
-      itemId: item.itemId, // setting the item id
+      id: item.itemId, // setting the item id
       quantity: item.quantity, // setting the quantity
       sellerId: item.sellerId, // setting the id of the merchant associated with the item
     }));
@@ -112,7 +112,7 @@ const Address = () => {
 
     console.log("The request body: ", reqBody);
 
-    /*try {
+    try {
       const response = await createOrder(reqBody) // calling the orders api
 
       // setting the response in the session storage 
@@ -125,7 +125,7 @@ const Address = () => {
 
     } catch (error) {
       console.log(error)
-    }*/
+    }
   };
 
   return (
