@@ -1,5 +1,8 @@
 package com.code.ecommerce.service.orders;
 
+import com.code.ecommerce.dto.requests.payments.PaymentItem;
+import com.code.ecommerce.dto.requests.payments.PaymentRequest;
+import com.code.ecommerce.exceptions.PaymentException;
 import com.code.ecommerce.pojo.orders.OrderItemDetails;
 import com.stripe.StripeClient;
 import com.stripe.model.checkout.Session;
@@ -23,18 +26,20 @@ public class PaymentServiceImplementation implements PaymentService{
     private static final Logger logger = LoggerFactory.getLogger(PaymentServiceImplementation.class);
 
     /**
+     * Initiates a Stripe checkout session for the provided payment request.
      *
-     * @param items
-     * @throws Exception
+     * @param request the payment request containing the order and item details
+     * @return the Stripe checkout session URL
+     * @throws Exception if the payment session cannot be created
      */
     @Override
-    public String initiatePayment(List<OrderItemDetails> items) throws Exception {
+    public String initiatePayment(PaymentRequest request) throws Exception {
         logger.info("Inside the initiate payment method - ");
         try{
             StripeClient client = new StripeClient(stripeApiKey);  // initialize the stripe client object
             List<SessionCreateParams.LineItem> lineItems = new ArrayList<>();  // creating a list for adding the items
 
-            for(OrderItemDetails item : items){
+            for(PaymentItem item : request.getItems()){
                 SessionCreateParams.LineItem item1 = SessionCreateParams.LineItem.builder()
                         .setQuantity(item.getQuantity().longValue())  // setting the quantity
                         .setPriceData(
@@ -43,8 +48,8 @@ public class PaymentServiceImplementation implements PaymentService{
                                         .setUnitAmount(item.getTotalAmount().longValue())  // setting the individual unit amount
                                         .setProductData(
                                                 SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                        .setName(item.getItem().getItemName())  // set item name
-                                                        .setDescription(item.getItem().getItemDescription())  // set item description
+                                                        .setName(item.getItemName())  // set item name
+                                                        .setDescription(item.getItemId())  // set item description
                                                         .build()
                                         )
                                         .build()
@@ -55,11 +60,11 @@ public class PaymentServiceImplementation implements PaymentService{
 
 
             Map<String, String> metaDataMap = new HashMap<>();  // creating a metadata map for the stripe object
-            metaDataMap.put("order-id", items.get(0).getOrder().getOrderId());  // adding the order id
+            metaDataMap.put("order-id", request.getOrderId());  // adding the order id
 
             SessionCreateParams params = SessionCreateParams.builder()
-                    .setSuccessUrl("http://localhost:5173/success")  // setting the success url
-                    .setCancelUrl("http://localhost:5173/cancel")  // setting the cancel url
+                    .setSuccessUrl("http://localhost:3000/confirm")  // setting the success url
+                    .setCancelUrl("http://localhost:3000/cancel")  // setting the cancel url
                     .setMode(SessionCreateParams.Mode.PAYMENT)  // setting the mode of payment
                     .addAllLineItem(lineItems)  // adding the line items
                     .putAllMetadata(metaDataMap)  // adding the metadata
@@ -70,7 +75,7 @@ public class PaymentServiceImplementation implements PaymentService{
 
         } catch (RuntimeException e) {
             logger.info("Error creating payment session: {}", e.getMessage());
-            throw new RuntimeException(e);
+            throw new PaymentException("Payment session url could not be generated");
         }
     }
 }

@@ -84,6 +84,7 @@ public class OrderServiceImplementation implements OrderService {
             // Setting and generating the order details object
             OrderDetails orderDetails = this.generateOrderDetails(orderDetailsId, request);  // getting the order details object
             orderDetails.setOrder(currentOrder);  // saving the current order inside the order details
+            currentOrder.setOrderDetails(orderDetails);  // setting the order details for the order
 
             // setting and generating the order items
             List<OrderItemDetails> items = this.generateOrderItems(request.getItems(), currentOrder);
@@ -96,10 +97,8 @@ public class OrderServiceImplementation implements OrderService {
             orderDetailsRepository.save(orderDetails);  // saving the order details data object
 
             //currentOrder.setOrderItems(items);  // setting the order items for the current order
-            currentOrder.getOrderItems().clear();
-
             for (OrderItemDetails item : items) {
-                order.addOrderItem(item);   // setting the order items for the current order
+                currentOrder.addOrderItem(item);   // setting the order items for the current order
             }
             currentOrder.setGrandTotal(grandOrderTotal);  // setting the total amount of the current order
 
