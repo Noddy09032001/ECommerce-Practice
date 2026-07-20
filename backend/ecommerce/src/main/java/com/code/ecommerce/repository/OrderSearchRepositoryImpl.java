@@ -2,10 +2,8 @@ package com.code.ecommerce.repository;
 
 import com.code.ecommerce.dto.requests.orderSearch.OrderSearchRequest;
 import com.code.ecommerce.dto.response.UserDetailsResponse;
-import com.code.ecommerce.dto.response.orderSearch.OrderItemResponse;
-import com.code.ecommerce.dto.response.orderSearch.OrderSearchResponse;
-import com.code.ecommerce.dto.response.orderSearch.OrderStatusHistoryResponse;
-import com.code.ecommerce.dto.response.orderSearch.SellerOrderResponse;
+import com.code.ecommerce.dto.response.orderSearch.*;
+import com.code.ecommerce.exceptions.OrderSearchException;
 import com.code.ecommerce.pojo.Seller;
 import com.code.ecommerce.pojo.UserDetails;
 import com.code.ecommerce.pojo.orders.Order;
@@ -24,10 +22,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
 public class OrderSearchRepositoryImpl implements OrderSearchRepository{
@@ -37,9 +34,9 @@ public class OrderSearchRepositoryImpl implements OrderSearchRepository{
 
     private static final Logger logger = LoggerFactory.getLogger(OrderSearchRepositoryImpl.class);  // getting the logger
 
-    @Override
+    /*@Override
     public Page<OrderSearchResponse> searchOrder(OrderSearchRequest request) {
-        logger.info("Inside the method for searching the order based on given parameters");
+        logger.info("\nInside the method for searching the order based on given parameters - ");
         try{
 
             List<Predicate> predicates = new ArrayList<>();  // storing the conditionally criteria for building the query
@@ -63,7 +60,7 @@ public class OrderSearchRepositoryImpl implements OrderSearchRepository{
 
             // username filter for the order
             if (request.getUserName() != null && !request.getUserName().isBlank()) {
-                predicates.add(cb.like(cb.lower(user.get("userName")), "%" + request.getUserName().toLowerCase() + "%"));
+                predicates.add(cb.like(cb.lower(user.get("name")), "%" + request.getUserName().toLowerCase() + "%"));
             }
 
             // email filtering
@@ -145,8 +142,7 @@ public class OrderSearchRepositoryImpl implements OrderSearchRepository{
                 Map<String, SellerOrderResponse> sellerMap = new LinkedHashMap<>();  // grouping all items by seller
 
                 for (OrderItemDetails orderItem : entity.getOrderItems()) {
-
-                    Seller seller = entity.getOrderDetails().getSeller();   // getting the current merchant details
+                    Seller seller = orderItem.getSeller();   // getting the current merchant details
                     SellerOrderResponse sellerResponse = sellerMap.computeIfAbsent(seller.getSellerId(), id -> {
 
                                         SellerOrderResponse s = new SellerOrderResponse();  // generating the merchant item response
@@ -247,7 +243,379 @@ public class OrderSearchRepositoryImpl implements OrderSearchRepository{
 
         } catch (Exception e) {
             logger.info("Error searching for orders - {}", e.getMessage());
-            throw new RuntimeException(e);
+            throw new OrderSearchException("Unable to find the orders for the given parameters");
         }
+    }*/
+
+    /**
+     * Searches orders based on the supplied filters and returns a paginated response.
+     *
+     * @param request the order search request
+     * @return the paginated order search response
+     */
+    @Override
+    public Page<OrderSearchResponse> searchOrder(OrderSearchRequest request) {
+        logger.info("Searching orders with filters : {}", request);
+        try {
+            Session session = entityManager.unwrap(Session.class);
+
+            // fetching the paginated order ids
+            List<Long> orderIds = getPagedOrderIds(session, request);
+
+            if (orderIds.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList(), PageRequest.of(request.getPage(), request.getSize()), 0);
+            }
+
+            // Fetching the  orders with user, order details, items and sellers
+            List<Order> orders = getOrdersWithItems(session, orderIds);
+
+            // Fetching the status history for the orders
+            Map<Long, List<OrderStatusHistory>> statusMap = getOrderStatuses(session, orderIds);
+
+            // Converting the entities into response structures
+            List<OrderSearchResponse> response = orders.stream()
+                    .map(order -> mapToResponse(order,
+                            statusMap.getOrDefault(order.getId(), Collections.emptyList())))
+                    .collect(Collectors.toList());
+
+            // Getting the total count for pagination
+            Long totalCount = getTotalCount(session, request);
+            logger.info("Total Orders Found : {}", totalCount);
+
+            return new PageImpl<>(response, PageRequest.of(request.getPage(), request.getSize()), totalCount);
+
+        } catch (Exception ex) {
+
+            logger.error("Error while searching orders", ex);
+
+            throw new RuntimeException(
+                    "Unable to fetch order search results",
+                    ex
+            );
+        }
+    }
+
+    /**
+     * Returns the paginated order ids after applying all search filters and sorting.
+     *
+     * @param session the Hibernate session
+     * @param request the order search request
+     * @return the paginated order ids
+     */
+    private List<Long> getPagedOrderIds(Session session, OrderSearchRequest request) {
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Order> cq = cb.createQuery(Order.class);
+
+        Root<Order> order = cq.from(Order.class);
+        Join<Order, UserDetails> user = order.join("user", JoinType.INNER);
+
+        List<Predicate> predicates = buildOrderPredicates(cb, order, user, request);
+
+        cq.select(order).distinct(true);
+        cq.where(predicates.toArray(new Predicate[0]));
+
+        // Sorting
+        if ("AMOUNT_ASC".equalsIgnoreCase(request.getSortBy())) {
+            cq.orderBy(cb.asc(order.get("grandTotal")));
+
+        } else if ("AMOUNT_DESC".equalsIgnoreCase(request.getSortBy())) {
+            cq.orderBy(cb.desc(order.get("grandTotal")));
+
+        } else if ("DATE_ASC".equalsIgnoreCase(request.getSortBy())) {
+            cq.orderBy(cb.asc(order.get("createdOn")));
+
+        } else if ("DATE_DESC".equalsIgnoreCase(request.getSortBy())) {
+            cq.orderBy(cb.desc(order.get("createdOn")));
+
+        } else {
+            cq.orderBy(cb.desc(order.get("createdOn")));
+        }
+
+        TypedQuery<Order> query = session.createQuery(cq);
+
+        query.setFirstResult(request.getPage() * request.getSize());
+        query.setMaxResults(request.getSize());
+
+        return query.getResultList().stream().map(Order::getId).collect(Collectors.toList());
+    }
+
+    /**
+     * Fetches the orders along with their associated items and seller details.
+     *
+     * @param session the Hibernate session
+     * @param orderIds the order ids
+     * @return the orders with item details
+     */
+    private List<Order> getOrdersWithItems(Session session, List<Long> orderIds) {
+        if (orderIds == null || orderIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Order> cq = cb.createQuery(Order.class);
+        Root<Order> order = cq.from(Order.class);
+
+        // fetching the user details
+        order.fetch("user", JoinType.LEFT);
+
+        // fetching the order details
+        order.fetch("orderDetails", JoinType.LEFT);
+
+        // fetching the order items associated with the items
+        Fetch<Order, OrderItemDetails> itemFetch =
+                order.fetch("orderItems", JoinType.LEFT);
+
+        // fetch the item
+        itemFetch.fetch("item", JoinType.LEFT);
+
+        // fetching the merchant associated with the item
+        itemFetch.fetch("seller", JoinType.LEFT);
+
+
+        cq.select(order).distinct(true);
+        cq.where(order.get("id").in(orderIds));
+        List<Order> orders = session.createQuery(cq).getResultList();
+        for (Order order1 : orders) {
+            System.out.println("\nOrder ID : " + order1.getId());
+
+            if (order1.getOrderDetails() == null) {
+                System.out.println("\nOrderDetails = NULL");
+            } else {
+                System.out.println("\nOrderDetails ID = " + order1.getOrderDetails().getId());
+            }
+        }
+
+        // preserving the pagination order
+        Map<Long, Order> orderMap = orders.stream().collect(Collectors.toMap(Order::getId, Function.identity()));
+
+        List<Order> orderedOrders = new ArrayList<>();
+        for (Long id : orderIds) {
+            Order entity = orderMap.get(id);
+            if (entity != null) {
+                orderedOrders.add(entity);
+            }
+        }
+
+        return orderedOrders;
+    }
+
+    /**
+     * Fetches the status history for the given order ids.
+     *
+     * @param session the Hibernate session
+     * @param orderIds the order ids
+     * @return the status history grouped by order id
+     */
+    private Map<Long, List<OrderStatusHistory>> getOrderStatuses(Session session, List<Long> orderIds) {
+        if (orderIds == null || orderIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+
+        CriteriaQuery<OrderStatusHistory> cq = cb.createQuery(OrderStatusHistory.class);
+        Root<OrderStatusHistory> status = cq.from(OrderStatusHistory.class);
+
+        status.fetch("order", JoinType.INNER);
+        cq.select(status);
+        cq.where(status.get("order").get("id").in(orderIds));
+        cq.orderBy(cb.asc(status.get("statusDate")));
+
+        List<OrderStatusHistory> statuses = session.createQuery(cq).getResultList();
+
+        return statuses.stream().collect(Collectors.groupingBy(s -> s.getOrder().getId(),
+                        LinkedHashMap::new, Collectors.toList()));
+    }
+
+    /**
+     * Builds the predicates for the order search query.
+     *
+     * @param cb criteria builder
+     * @param order order root
+     * @param user user join
+     * @param request search request
+     * @return list of predicates
+     */
+    private List<Predicate> buildOrderPredicates(CriteriaBuilder cb, Root<Order> order, Join<Order, UserDetails> user, OrderSearchRequest request) {
+        List<Predicate> predicates = new ArrayList<>();
+        if (request.getUserName() != null && !request.getUserName().isBlank()) {
+            predicates.add(cb.like(cb.lower(user.get("name")), "%" + request.getUserName().toLowerCase() + "%"));
+        }
+
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            predicates.add(cb.like(cb.lower(user.get("email")), "%" + request.getEmail().toLowerCase() + "%"));
+        }
+
+        if (request.getSearchText() != null && !request.getSearchText().isBlank()) {
+            predicates.add(cb.like(cb.lower(order.get("orderId")), "%" + request.getSearchText().toLowerCase() + "%"));
+        }
+
+        if (request.getMinOrderAmount() != null) {
+            predicates.add(cb.greaterThanOrEqualTo(order.get("grandTotal"), request.getMinOrderAmount()));
+        }
+
+        if (request.getMaxOrderAmount() != null) {
+            predicates.add(cb.lessThanOrEqualTo(order.get("grandTotal"), request.getMaxOrderAmount()));
+        }
+
+        if (request.getFromDate() != null) {
+            predicates.add(cb.greaterThanOrEqualTo(order.get("createdOn"), request.getFromDate()));
+        }
+
+        if (request.getToDate() != null) {
+            predicates.add(cb.lessThanOrEqualTo(order.get("createdOn"), request.getToDate()));
+        }
+
+        return predicates;
+    }
+
+    /**
+     * Returns the total number of orders matching the search filters.
+     *
+     * @param session the Hibernate session
+     * @param request the search request
+     * @return total matching orders
+     */
+    private Long getTotalCount(Session session, OrderSearchRequest request) {
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Order> order = cq.from(Order.class);
+        Join<Order, UserDetails> user = order.join("user", JoinType.LEFT);
+
+        List<Predicate> predicates = buildOrderPredicates(cb, order, user, request);
+        cq.select(cb.countDistinct(order));
+        cq.where(predicates.toArray(new Predicate[0]));
+
+        return session.createQuery(cq).getSingleResult();
+    }
+
+    /**
+     * Converts the Order entity into the search response DTO.
+     *
+     * @param order the order entity
+     * @param statuses the status history of the order
+     * @return the mapped order response
+     */
+    private OrderSearchResponse mapToResponse(Order order, List<OrderStatusHistory> statuses) {
+        OrderSearchResponse response = new OrderSearchResponse();
+
+        response.setOrderId(order.getOrderId());
+        response.setCurrentStatus(order.getCurrentStatus());
+        response.setTotalItems(order.getTotalItems());
+        response.setGrandTotal(order.getGrandTotal());
+        response.setCreatedOn(order.getCreatedOn());
+        response.setModifiedOn(order.getModifiedOn());
+        response.setCreatedBy(order.getCreatedBy());
+        response.setModifiedBy(order.getModifiedBy());
+
+        // Customer Details
+        UserDetailsResponse customer = new UserDetailsResponse();
+        customer.setName(order.getUser().getName());
+        customer.setEmail(order.getUser().getEmail());
+
+        response.setCustomer(customer);
+
+        OrderDetails details = order.getOrderDetails();
+        OrderDetailsResponse detailsResponse = new OrderDetailsResponse();
+
+        if (details != null) {
+            detailsResponse.setOrderDetailsId(details.getOrderDetailsId());  // setting the order details id
+            detailsResponse.setAmount(details.getAmount());  // setting the amount
+            detailsResponse.setTotalTaxInAmount(details.getTotalTaxInAmount());  // setting the tax amount
+            detailsResponse.setTotalOrderAmount(details.getTotalOrderAmount());
+
+            String payMode = "";
+
+            if(details.getPaymentMode() == null)
+                payMode = "CARD";
+
+            detailsResponse.setPaymentMode(payMode);
+            detailsResponse.setCity(details.getCity());
+            detailsResponse.setState(details.getState());
+            detailsResponse.setAddress(details.getAddress());
+        }
+
+        response.setOrderDetails(detailsResponse);  // setting the order details response
+
+        // grouping the items by the merchants associated
+        Map<String, SellerOrderResponse> sellerMap = new LinkedHashMap<>();
+
+        for (OrderItemDetails orderItem : order.getOrderItems()) {
+            Seller seller = orderItem.getSeller();
+            SellerOrderResponse sellerResponse = sellerMap.computeIfAbsent(
+                            seller.getSellerId(), id -> mapSellerResponse(order, seller));
+
+            OrderItemResponse itemResponse = new OrderItemResponse();
+
+            itemResponse.setItemId(orderItem.getItem().getItemId());
+            itemResponse.setItemName(orderItem.getItem().getItemName());
+            itemResponse.setCategory(orderItem.getItem().getCategory());
+
+            itemResponse.setQuantity(orderItem.getQuantity());
+
+            itemResponse.setAmountWithoutTax(orderItem.getAmountWithoutTax());
+
+            itemResponse.setCgstAmount(orderItem.getCgstAmount());
+            itemResponse.setSgstAmount(orderItem.getSgstAmount());
+            itemResponse.setIgstAmount(orderItem.getIgstAmount());
+            itemResponse.setVatAmount(orderItem.getVatAmount());
+            itemResponse.setCessAmount(orderItem.getCessAmount());
+
+            itemResponse.setTotalAmount(orderItem.getTotalAmount());
+            sellerResponse.getItems().add(itemResponse);
+        }
+
+        response.setSellerOrders(new ArrayList<>(sellerMap.values()));
+
+        // getting the status history for the order
+        List<OrderStatusHistoryResponse> statusResponses = statuses == null
+                        ? Collections.emptyList()
+                        : statuses.stream()
+                        .sorted(Comparator.comparing(OrderStatusHistory::getStatusDate))
+                        .map(this::mapStatusResponse).toList();
+
+        response.setOrderStatuses(statusResponses);  // setting the order status response and adding it to the status list
+        return response;   // returning the response structure
+    }
+
+    /**
+     * Creates the seller response for an order.
+     *
+     * @param order the order entity
+     * @param seller the seller entity
+     * @return the seller response
+     */
+    private SellerOrderResponse mapSellerResponse(Order order, Seller seller) {
+        SellerOrderResponse response = new SellerOrderResponse();
+        response.setSellerId(seller.getSellerId());
+        response.setSellerName(seller.getSellerName());
+        OrderDetails details = order.getOrderDetails();
+
+        if (details != null) {
+            response.setAmount(details.getAmount());
+            response.setTotalTaxInAmount(details.getTotalTaxInAmount());
+            response.setTotalOrderAmount(details.getTotalOrderAmount());
+            response.setAddress(details.getAddress());
+            response.setCity(details.getCity());
+            response.setState(details.getState());
+        }
+
+        response.setItems(new ArrayList<>());
+        return response;
+    }
+
+    /**
+     * Converts the order status history entity into its response DTO.
+     *
+     * @param status the order status history entity
+     * @return the mapped status response
+     */
+    private OrderStatusHistoryResponse mapStatusResponse(OrderStatusHistory status) {
+        OrderStatusHistoryResponse response = new OrderStatusHistoryResponse();
+        response.setStatus(status.getStatus());
+        response.setCreatedOn(status.getStatusDate());
+        response.setRemarks(status.getRemarks());
+
+        return response;
     }
 }
