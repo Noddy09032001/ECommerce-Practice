@@ -31,6 +31,9 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderStatusHistory> orderStatuses = new ArrayList<>();
 
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private OrderPaymentDetails orderPaymentDetails;
+
     @Column(name = "created_on")
     private LocalDateTime createdOn;  // time of the order creation
 
@@ -55,7 +58,7 @@ public class Order {
     public Order(){}
 
     public Order(Long id, String orderId, UserDetails user, List<OrderItemDetails> orderItems, OrderDetails orderDetails,
-                 List<OrderStatusHistory> orderStatuses, LocalDateTime createdOn, LocalDateTime modifiedOn,
+                 List<OrderStatusHistory> orderStatuses, OrderPaymentDetails orderPaymentDetails, LocalDateTime createdOn, LocalDateTime modifiedOn,
                  String createdBy, String modifiedBy, String currentStatus, Integer totalItems, Double grandTotal) {
         this.id = id;
         this.orderId = orderId;
@@ -63,6 +66,7 @@ public class Order {
         this.orderItems = orderItems;
         this.orderDetails = orderDetails;
         this.orderStatuses = orderStatuses;
+        this.orderPaymentDetails = orderPaymentDetails;
         this.createdOn = createdOn;
         this.modifiedOn = modifiedOn;
         this.createdBy = createdBy;
@@ -174,6 +178,14 @@ public class Order {
 
     public void setOrderStatuses(List<OrderStatusHistory> orderStatuses) {
         this.orderStatuses = orderStatuses;
+    }
+
+    public OrderPaymentDetails getOrderPaymentDetails() {
+        return orderPaymentDetails;
+    }
+
+    public void setOrderPaymentDetails(OrderPaymentDetails orderPaymentDetails) {
+        this.orderPaymentDetails = orderPaymentDetails;
     }
 
     /**
