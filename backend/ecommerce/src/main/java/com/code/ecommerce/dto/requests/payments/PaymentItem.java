@@ -4,6 +4,7 @@ public class PaymentItem {
     private Double baseAmount;
     private String itemId;
     private String itemName;
+    private String itemDescription;
     private Double otherCharges;
     private Integer quantity;
     private Double taxAmount;
@@ -34,6 +35,14 @@ public class PaymentItem {
 
     public void setItemName(String itemName) {
         this.itemName = itemName;
+    }
+
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
     }
 
     public Double getOtherCharges() {

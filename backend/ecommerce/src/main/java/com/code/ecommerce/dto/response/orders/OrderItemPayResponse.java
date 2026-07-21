@@ -6,6 +6,7 @@ public class OrderItemPayResponse {
 
     private String itemId;
     private String itemName;
+    private String itemDescription;
     private Double baseAmount;
     private Double totalAmount;
     private Double taxAmount;
@@ -29,6 +30,14 @@ public class OrderItemPayResponse {
 
     public void setItemName(String itemName) {
         this.itemName = itemName;
+    }
+
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
     }
 
     public Double getTotalAmount() {
