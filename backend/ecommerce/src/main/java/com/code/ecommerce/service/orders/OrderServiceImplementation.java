@@ -16,9 +16,14 @@ import com.code.ecommerce.pojo.orders.OrderItemDetails;
 import com.code.ecommerce.pojo.orders.OrderStatusHistory;
 import com.code.ecommerce.repository.*;
 import com.code.ecommerce.service.users.UserDetailsService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,23 +35,28 @@ public class OrderServiceImplementation implements OrderService {
 
     private static Logger logger = LoggerFactory.getLogger(OrderServiceImplementation.class);
 
+    private final JavaMailSender javaMailSender;
     private final OrderRepository orderRepository;
     private final OrderDetailsRepository orderDetailsRepository;
     private final OrderItemDetailsRepository orderItemDetailsRepository;
     private final ItemRepository itemRepository;
     private final SellerItemMappingRepository sellerItemMappingRepository;
     private final UserDetailsService userDetailsService;
+    private final OrderStatusRepository orderStatusRepository;
 
     @Autowired
-    public OrderServiceImplementation(OrderRepository orderRepository, OrderDetailsRepository orderDetailsRepository,
+    public OrderServiceImplementation(JavaMailSender javaMailSender, OrderRepository orderRepository, OrderDetailsRepository orderDetailsRepository,
                                       OrderItemDetailsRepository orderItemDetailsRepository, ItemRepository itemRepository,
-                                      SellerItemMappingRepository sellerItemMappingRepository, UserDetailsService userDetailsService) {
+                                      SellerItemMappingRepository sellerItemMappingRepository, UserDetailsService userDetailsService,
+                                      OrderStatusRepository orderStatusRepository) {
+        this.javaMailSender = javaMailSender;
         this.orderRepository = orderRepository;
         this.orderDetailsRepository = orderDetailsRepository;
         this.orderItemDetailsRepository = orderItemDetailsRepository;
         this.itemRepository = itemRepository;
         this.sellerItemMappingRepository = sellerItemMappingRepository;
         this.userDetailsService = userDetailsService;
+        this.orderStatusRepository = orderStatusRepository;
     }
 
     /**
@@ -106,6 +116,7 @@ public class OrderServiceImplementation implements OrderService {
             orderRepository.save(currentOrder);  // saving the updated order model
 
             OrderStatusHistory orderStatus = this.createOrderStatusHistory(currentOrder);  // getting the current status of the order
+            orderStatusRepository.save(orderStatus);   // saving the order status
             return this.generateOrderResponse(currentOrder, items); // returning the response being generated for the order
 
         } catch (Exception e) {
@@ -126,10 +137,11 @@ public class OrderServiceImplementation implements OrderService {
     }
 
     @Override
-    public void fetchOrderByOrderId(String orderId) throws Exception {
+    public Order fetchOrderByOrderId(String orderId) throws Exception {
         logger.info("Inside the fetch order by order id method - ");
         try{
-
+            Order currentOrder = orderRepository.findByOrderId(orderId);  // finding the current order by the order id
+            return currentOrder;
         } catch (Exception e) {
             logger.info("Error fetching order: {}", e.getMessage());
             throw new RuntimeException(e);
@@ -263,6 +275,7 @@ public class OrderServiceImplementation implements OrderService {
      * @param order the order object containing the details of the order
      * @return the order status object
      */
+    @Override
     public OrderStatusHistory createOrderStatusHistory(Order order){
         OrderStatusHistory orderStatusHistory = new OrderStatusHistory();
         orderStatusHistory.setOrder(order);  // setting the order object
@@ -311,6 +324,7 @@ public class OrderServiceImplementation implements OrderService {
             OrderItemPayResponse response = new OrderItemPayResponse();
             response.setItemId(details.getItem().getItemId());   // setting the item id
             response.setItemName(details.getItem().getItemName());   // setting the item name
+            response.setItemDescription(details.getItem().getItemDescription());  // setting the item description
             response.setBaseAmount(details.getAmountWithoutTax());   // setting the base amount
 
             // calculating the total tax amount for the item
@@ -325,5 +339,62 @@ public class OrderServiceImplementation implements OrderService {
             responses.add(response);  // adding to the list of responses
         }
         return responses;  // returning the responses
+    }
+
+    /**
+     * Generating confirmation email for order creation
+     *
+     * @param customerEmail the email of the user whose order it is
+     * @param customerName the name of the customer
+     * @param orderId the order id of the current order
+     * @param orderDate the date of the order when it was confirmed and processed
+     * @throws MessagingException exception if any error occurs during the message generation or sending
+     */
+    @Override
+    public void sendOrderConfirmationMail(String customerEmail, String customerName, String orderId, LocalDateTime orderDate) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setFrom(""); // sender email
+        helper.setTo(customerEmail); // recipient email
+        helper.setSubject("Your Order Has Been Confirmed"); // email subject
+
+        String content = """
+            <html>
+            <body style="font-family: Arial, Helvetica, sans-serif; color: #333333;">
+                <h2>Order Confirmation</h2>
+                <p>Dear %s,</p>
+                <p>
+                    Thank you for shopping with us.
+                    We're pleased to inform you that your payment has been received successfully
+                    and your order has been confirmed.
+                </p>
+
+                <h3>Order Details</h3>
+                <p>
+                    <strong>Order ID:</strong> %s<br>
+                    <strong>Order Date:</strong> %s<br>
+                    <strong>Payment Status:</strong> Confirmed
+                </p>
+                <p>
+                    To view your complete order details and track your order,
+                    simply log in to your account through our application.
+                </p>
+
+                <p>
+                    Thank you for choosing us.
+                </p>
+
+                <br>
+                <p>
+                    Regards,<br>
+                    <strong>Your Company Team</strong>
+                </p>
+            </body>
+            </html>
+            """
+                .formatted(customerName, orderId, orderDate);
+
+        helper.setText(content, true); // setting the email context and text
+        javaMailSender.send(message);  // sending the email
     }
 }
