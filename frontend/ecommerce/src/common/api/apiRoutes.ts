@@ -10,6 +10,9 @@ export const API_ROUTES = {
         "CREATE_ORDER": "orders/create-order",  // creating a new order
         "ALL_ORDERS": "",
     },
+    PAYMENTS: {
+        "CREATE_PAYMENT": "payments/checkout",  // creating and generating a new stripe payment checkout link
+    },
     USERS: "/users",
     SELLERS: "/sellers",
 
