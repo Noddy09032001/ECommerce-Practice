@@ -114,11 +114,17 @@ const Address = () => {
 
     try {
       const response = await createOrder(reqBody) // calling the orders api
+      console.log(response)
+
+      const paymentItems = {
+        items: response.items,
+        orderId: response.orderId,
+      }
 
       // setting the response in the session storage 
       sessionStorage.setItem(
         "currentOrder",
-        JSON.stringify(response.data)
+        JSON.stringify(paymentItems)  // setting the items in the session storage 
       );
 
       router.push("/checkout/payment");  // routing to the payment page after the response 
