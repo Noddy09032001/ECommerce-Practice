@@ -1,4 +1,4 @@
-"use client";
+/*"use client";
 
 import { Truck, MapPin, PackageCheck, Hash } from "lucide-react";
 
@@ -54,6 +54,52 @@ export default function DrawerShipment() {
 
               <span className="font-semibold text-success">Tomorrow</span>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+*/
+
+"use client";
+
+import { AlertCircle, PackageSearch } from "lucide-react";
+
+export default function DrawerShipment() {
+  return (
+    <section>
+      <div className="flex items-center gap-3 mb-6">
+        <PackageSearch size={22} className="text-primary" />
+
+        <div>
+          <h2 className="text-2xl font-semibold text-foreground">
+            Shipment Details
+          </h2>
+
+          <p className="text-secondary text-sm">Shipping information</p>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-default bg-card p-8">
+        <div className="flex items-start gap-4">
+          <AlertCircle className="text-yellow-500 mt-1" size={22} />
+
+          <div>
+            <h3 className="font-semibold text-foreground">
+              Shipment information unavailable
+            </h3>
+
+            <p className="mt-2 text-secondary leading-7">
+              This order response does not include shipment details such as
+              courier partner, tracking ID, current location, or expected
+              delivery date.
+            </p>
+
+            <p className="mt-4 text-secondary leading-7">
+              Shipment details will appear here once they are provided by the
+              backend.
+            </p>
           </div>
         </div>
       </div>
