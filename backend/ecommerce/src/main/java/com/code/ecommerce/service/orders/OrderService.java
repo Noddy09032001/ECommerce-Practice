@@ -14,5 +14,5 @@ public interface OrderService {
     void updateOrder() throws Exception;  // method to update the order
     Order fetchOrderByOrderId(String orderId) throws Exception;  // method to fetch the order by the order id
     OrderStatusHistory createOrderStatusHistory(Order order);   // method to generate the order status history
-    void sendOrderConfirmationMail(String customerEmail, String customerName, String orderId, LocalDateTime orderDate) throws MessagingException;
+    //void sendOrderConfirmationMail(String customerEmail, String customerName, String orderId, LocalDateTime orderDate) throws MessagingException;
 }

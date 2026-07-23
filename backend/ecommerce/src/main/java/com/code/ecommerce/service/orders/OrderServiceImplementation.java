@@ -35,7 +35,6 @@ public class OrderServiceImplementation implements OrderService {
 
     private static Logger logger = LoggerFactory.getLogger(OrderServiceImplementation.class);
 
-    private final JavaMailSender javaMailSender;
     private final OrderRepository orderRepository;
     private final OrderDetailsRepository orderDetailsRepository;
     private final OrderItemDetailsRepository orderItemDetailsRepository;
@@ -45,11 +44,10 @@ public class OrderServiceImplementation implements OrderService {
     private final OrderStatusRepository orderStatusRepository;
 
     @Autowired
-    public OrderServiceImplementation(JavaMailSender javaMailSender, OrderRepository orderRepository, OrderDetailsRepository orderDetailsRepository,
+    public OrderServiceImplementation(OrderRepository orderRepository, OrderDetailsRepository orderDetailsRepository,
                                       OrderItemDetailsRepository orderItemDetailsRepository, ItemRepository itemRepository,
                                       SellerItemMappingRepository sellerItemMappingRepository, UserDetailsService userDetailsService,
                                       OrderStatusRepository orderStatusRepository) {
-        this.javaMailSender = javaMailSender;
         this.orderRepository = orderRepository;
         this.orderDetailsRepository = orderDetailsRepository;
         this.orderItemDetailsRepository = orderItemDetailsRepository;
@@ -350,7 +348,7 @@ public class OrderServiceImplementation implements OrderService {
      * @param orderDate the date of the order when it was confirmed and processed
      * @throws MessagingException exception if any error occurs during the message generation or sending
      */
-    @Override
+    /*@Override
     public void sendOrderConfirmationMail(String customerEmail, String customerName, String orderId, LocalDateTime orderDate) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -396,5 +394,5 @@ public class OrderServiceImplementation implements OrderService {
 
         helper.setText(content, true); // setting the email context and text
         javaMailSender.send(message);  // sending the email
-    }
+    }*/
 }
